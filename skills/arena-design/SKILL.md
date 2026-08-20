@@ -27,12 +27,12 @@ Open a todolist with one entry per phase before launching anything.
 The shared prompt is the contract. Before spawning:
 
 1. **State the design problem**, not the solution: what the user must accomplish on this surface, with what context and constraints (tokens, system, breakpoints, real content). Attach the real content: a candidate working with lorem ipsum explores typography, not design.
-2. **Pick this run's medium** and read its reference: [Paper](references/paper.md), [Figma](references/figma.md), or [code](references/code.md). One medium per arena; the medium decides how each candidate is delivered, viewed, and verified.
+2. **Confirm this run's medium** and read its reference: [Paper](references/paper.md), [Figma](references/figma.md), or [code](references/code.md). One medium per arena; the medium decides how each candidate is delivered, viewed, and verified. When the user named the medium, proceed. When they did not, **ask before anything else** — one question offering the three, with a recommendation drawn from context (a Figma file open → Figma; a repo with the target surface → code; early ideation with no repo → Paper). The fan out is the expensive step; running it in the wrong medium wastes the whole arena, so the medium is never inferred silently.
 3. **Derive the UX+UI rubric**: 3-6 gradeable criteria where at least one is UX (does the user complete the task with fewer steps / less load?) and at least one is UI (hierarchy, rhythm, use of the system). Concrete: "the empty state distinguishes first use from filtered-to-zero." Vague: "looks good."
 4. **Assign directions**: one per candidate, named and mutually exclusive. Useful axes: density (airy editorial vs data-dense), structure (linear vs progressive disclosure vs spatial), reference pattern (table vs cards vs timeline), tone (systematic vs expressive). 3-4 candidates; more only when the problem has more real axes.
 5. **Assign separate outputs** per candidate according to the medium (own artboards, own pages/sections, own routes or files). Two candidates writing to the same nodes clobber each other.
 
-Frame is closed when: problem stated with real content attached, medium picked and its reference read, a 3-6 criterion rubric with at least one UX and one UI criterion, N named mutually exclusive directions, N outputs assigned.
+Frame is closed when: problem stated with real content attached, medium confirmed by the user (stated or answered, never inferred) and its reference read, a 3-6 criterion rubric with at least one UX and one UI criterion, N named mutually exclusive directions, N outputs assigned. **Before spawning, show the frame in five lines** (problem, medium, rubric, directions, N) — it is the last cheap moment to correct course; every phase after it spends N agents.
 
 ## Phase B: Research
 
