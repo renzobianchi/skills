@@ -20,11 +20,11 @@ The skill runs self-contained: pattern research falls back to a bundled local ca
 |---|---|---|
 | [Mobbin MCP](https://mobbin.com) | Real production screens/flows for the grounding memo | Mobbin account + MCP setup |
 | [Emil Kowalski's skills](https://aiforui.dev) (`design-foundations`, `typography`, `color`, `forms-and-inputs`, `animate`) | Craft floor each candidate reads before designing | `npx @aiforui/install` |
-| [impeccable](https://github.com/impeccable) | The judge's craft-floor lens | see its repo |
-| `better-layout`, `better-accessibility` ([Jakub Krehel](https://github.com/jakubkrehel/skills)) | Layout/a11y depth for relevant problems | see repo |
+| [impeccable](https://impeccable.style) | The judge's craft-floor lens | see its site |
+| `better-layout`, `better-accessibility` ([Jakub Krehel](https://github.com/jakubkrehel/skills)) | Layout/a11y depth for relevant problems | `npx skills add jakubkrehel/skills` |
 
 ## Credits
 
-- Arena pattern (frame → fan out → cross-judge → pick → graft → verify) adapted from [`arena`](https://github.com/cursor/plugins/tree/main/pstack) by Lauren Tan (pstack).
-- Craft-layer skills by Emil Kowalski, Jakub Krehel, and the impeccable authors — see table above.
-- Design-arena adaptation by Renzo Bianchi.
+- Arena pattern (frame → fan out → cross-judge → pick → graft → verify) adapted from [`arena`](https://github.com/cursor/plugins/tree/main/pstack) by [Lauren Tan](https://x.com/poteto) (pstack).
+- Craft-layer skills by [Emil Kowalski](https://x.com/emilkowalski_), [Jakub Krehel](https://x.com/jakubkrehel), and [Paul Bakaus](https://x.com/pbakaus) (impeccable) — see table above.
+- Design-arena adaptation by [Renzo Bianchi](https://x.com/renzobianchi_).
