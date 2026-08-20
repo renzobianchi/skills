@@ -1,16 +1,24 @@
 # skills
 
-Agent skills by [Renzo Bianchi](https://github.com/renzobianchi). Each skill is a self-contained folder: copy it into your agent's skills directory (`~/.claude/skills/`, `~/.codex/skills/`, etc.) and invoke it by name.
+Agent skills by [Renzo Bianchi](https://github.com/renzobianchi). Each skill is a self-contained folder under `skills/`.
 
 | Skill | What it does |
 |---|---|
 | [arena-design](skills/arena-design) | Design-exploration arena: N parallel candidates with assigned directions attack the same UX+UI problem in Paper, Figma, or code; visual cross-judge, base + grafts. |
-| [html](https://github.com/renzobianchi/html-skill) | Standalone interactive HTML artifacts as the medium for agent↔designer conversation (published separately). |
+| [html](skills/html) | Standalone interactive HTML artifacts as the medium for agent↔designer conversation: review docs, variant boards, motion comparisons, copy ecosystems. |
 
-## Install
+## Install everything
 
+```sh
+git clone https://github.com/renzobianchi/skills && sh skills/install.sh
 ```
-cp -R skills/arena-design ~/.claude/skills/arena-design
+
+The script detects your installed agents (Claude Code, Codex, Cursor, Grok, Gemini CLI, OpenCode) and copies every skill into each one's skills directory.
+
+## Install one skill
+
+```sh
+cp -R skills/skills/arena-design ~/.claude/skills/arena-design
 ```
 
 Each skill's README lists its optional integrations and credits.
