@@ -10,7 +10,22 @@ Works in three mediums, one per run:
 
 ## Install
 
-Copy this folder into your agent's skills directory (`~/.claude/skills/arena-design`, `~/.codex/skills/arena-design`, etc.). Invoke with `/arena-design` — it is deliberately user-invoked (`disable-model-invocation: true`); it will not fire on its own.
+The process is harness-neutral; the mechanics per agent CLI live in [`references/harness.md`](references/harness.md).
+
+| Harness | Copy the folder to | Invoke |
+|---|---|---|
+| Claude Code | `~/.claude/skills/arena-design` | `/arena-design` |
+| Cursor | `~/.agents/skills/arena-design` | `/arena-design` |
+| Codex CLI | `~/.agents/skills/arena-design` | `$arena-design` |
+| Grok Build CLI | `~/.agents/skills/arena-design` (also reads `~/.claude/skills`) | `/arena-design` |
+
+One copy in `~/.agents/skills/` plus a symlink from `~/.claude/skills/` covers all four. The skill is manual-only on purpose: `disable-model-invocation: true` in the frontmatter (Claude Code, Cursor, Grok) and `policy.allow_implicit_invocation: false` in `agents/openai.yaml` (Codex).
+
+Known gaps: Codex has its structured-question tool only in Plan mode, and Cursor's headless print mode skips questions; in both, the intake round degrades to a plain-text question.
+
+## Presets
+
+Two presets set how much a run spends: `quick` (2-3 candidates, local pattern catalog, the parent judges from screenshots, no re-run) and default (3-4 candidates, Mobbin/web research, a separate judge on a different model, one re-run on convergence). The skill asks which one at intake, recommends one from context, and declares in the synthesis note what `quick` skipped. There is no "high" preset on purpose: more candidates only help when the problem has more real axes.
 
 ## Optional integrations (graceful degradation built in)
 
