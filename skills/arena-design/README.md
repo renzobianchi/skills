@@ -12,10 +12,6 @@ Works in three mediums, one per run:
 
 Copy this folder into your agent's skills directory (`~/.claude/skills/arena-design`, `~/.codex/skills/arena-design`, etc.). Invoke with `/arena-design` — it is deliberately user-invoked (`disable-model-invocation: true`); it will not fire on its own.
 
-## Presets
-
-Two presets set how much a run spends: `quick` (2-3 candidates, local pattern catalog, the parent judges from screenshots, no re-run) and default (3-4 candidates, Mobbin/web research, a separate judge on a different model, one re-run on convergence). The skill asks which one at intake, recommends one from context, and declares in the synthesis note what `quick` skipped. There is no "high" preset on purpose: more candidates only help when the problem has more real axes.
-
 ## Optional integrations (graceful degradation built in)
 
 The skill runs self-contained: pattern research falls back to a bundled local catalog (`references/patterns.md`) when no external source is available. Each of these makes it stronger:

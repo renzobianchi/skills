@@ -12,7 +12,7 @@ Sibling of `arena` (code). The structural difference: in code, divergence betwee
 
 ## Phases
 
-Open a todolist with one entry per phase before launching anything.
+Open a todo list with one entry per phase before launching anything. Tool names for subagents, background runs, questions, and skill paths differ per agent CLI; [references/harness.md](references/harness.md) maps them for Claude Code, Cursor, Codex, and Grok Build.
 
 0. Intake (only when the context leaves gaps)
 1. Frame
@@ -38,7 +38,7 @@ Two presets set how much the arena spends. The dial is **coverage**, not quality
 
 ## 0. Intake
 
-One round of questions, before anything else, only when the context leaves a gap that would change the frame. Ask only what the repo, the open file, and the conversation leave unanswered; a question whose answer you could have read is spent attention. Hard cap: 4 questions plus the preset, in a single `AskUserQuestion` call.
+One round of questions, before anything else, only when the context leaves a gap that would change the frame. Ask only what the repo, the open file, and the conversation leave unanswered; a question whose answer you could have read is spent attention. Hard cap: 4 questions plus the preset, in a single call to the harness's ask-user tool (plain text when the harness has none in this mode).
 
 Gaps, in order of how much they change the frame:
 
@@ -76,7 +76,7 @@ One short pass BEFORE the fan out whose output is a shared **grounding memo** wi
 
 **Craft skills.** Detect which craft skills exist in the skills directory (`ls`) and assign them by role:
 
-- **Candidates**: each reads `design-foundations` (hierarchy/spacing/copy floor) plus the one relevant to the problem (`typography`, `color`, `better-layout`, `forms-and-inputs`, `animate` when there is motion). Reference by direct path (`~/.claude/skills/<skill>/SKILL.md`); reading it is part of the candidate's prompt.
+- **Candidates**: each reads `design-foundations` (hierarchy/spacing/copy floor) plus the one relevant to the problem (`typography`, `color`, `better-layout`, `forms-and-inputs`, `animate` when there is motion). Reference by direct path into the harness's skills directory; reading it is part of the candidate's prompt.
 - **Judge**: audits with the `impeccable` craft-floor lens (or `design-foundations` when impeccable is absent) on top of the arena rubric. Craft is the shared floor; the rubric decides between directions that already clear the floor.
 - **Synthesis**: the Graft step honors the user's system rules (tokens, scale, repo conventions) over any candidate preference.
 
@@ -84,7 +84,7 @@ Research is closed when the memo exists and states which pattern source ran and 
 
 ## 3. Fan out
 
-Spawn all N in one message, `run_in_background: true`. Each receives: the problem, the grounding memo, ITS assigned direction (not the others'), its output, the medium reference, and the obligation to deliver a **visible artifact + rationale**.
+Spawn all N in one message as background subagents. Each receives: the problem, the grounding memo, ITS assigned direction (not the others'), its output, the medium reference, and the obligation to deliver a **visible artifact + rationale**.
 
 The rationale names: which UX decisions it made and why, which alternatives within its direction it discarded, and where its direction suffers (the declared weak point is worth more than the strong one).
 
@@ -96,7 +96,7 @@ Fan out is closed when every live candidate has a renderable artifact at its out
 
 Screenshot before scoring, always: judging without rendering is judging the rationale, and rationales always sound convincing. The verdict scores per criterion, recommends a base, and names the best graft candidate per candidate.
 
-Who judges is a preset row. Default: one readonly judge, a model different from the parent's (`opus`/`sonnet`/`haiku`), that receives the rubric and the rendered artifacts (screenshots per medium; see the reference). `quick`: the parent renders, scores, and writes the verdict in the same shape; the second opinion is the row skipped.
+Who judges is a preset row. Default: one readonly judge on a model different from the parent's (ideally a different family), that receives the rubric and the rendered artifacts (screenshots per medium; see the reference). `quick`: the parent renders, scores, and writes the verdict in the same shape; the second opinion is the row skipped.
 
 ## 5. Pick
 

@@ -1,0 +1,9 @@
+# Codex CLI sidecar. Codex ignores `disable-model-invocation` in SKILL.md frontmatter;
+# this keeps the skill manual-only ($arena-design) there too.
+interface:
+  display_name: "Arena design"
+  short_description: "N parallel design candidates, visual cross-judge, base + grafts"
+policy:
+  allow_implicit_invocation: false
+dependencies:
+  tools: []
