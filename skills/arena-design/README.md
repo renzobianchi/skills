@@ -10,7 +10,11 @@ Works in three mediums, one per run:
 
 ## Install
 
-The process is harness-neutral; the mechanics per agent CLI live in [`references/harness.md`](references/harness.md).
+```sh
+npx skills add renzobianchi/skills --skill arena-design
+```
+
+That installs into every agent it detects. The process is harness-neutral; the mechanics per agent CLI live in [`references/harness.md`](references/harness.md). Manual install and how to invoke:
 
 | Harness | Copy the folder to | Invoke |
 |---|---|---|
