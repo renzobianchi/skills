@@ -1,0 +1,8 @@
+{
+  "status": "replaced",
+  "next": ["button"],
+  "proposedNext": [],
+  "usage": { "app": 207, "marketing": 45 },
+  "aliases": ["PrimaryLargeButton", "SecondarySmallIconButton"],
+  "note": "Marketing composes the styled member exports; recipe maps each to variant+size."
+}
