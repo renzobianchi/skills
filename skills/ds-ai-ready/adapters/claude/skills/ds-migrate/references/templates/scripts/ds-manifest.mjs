@@ -66,6 +66,7 @@ export const renderUsageScaffold = (key, m) => {
     '',
     '## Decisions',
     '',
+    ...(m.deviation ? [`- Deviation from upstream: ${m.deviation}`] : []),
     m.note ? `- ${m.note}` : '- <fill: from the manifest note>',
     '',
     '## Owner notes',

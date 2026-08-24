@@ -656,7 +656,7 @@ Changes folded into this revision after the first draft, so a reader of an older
 - **Kit-wip marker is 🟡** (was ⚪️); markers configurable (§3.3, §7.6).
 - **Multi-tool packaging**: tool-agnostic core plus adapters for Claude Code, Codex, Cursor and Grok (§7.1).
 - **`ds.config.json`** as the single place every optional branch is decided (§7.6).
-- **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A).
+- **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A). A repo that updates the script with components already at `parity` scaffolds one doc per component before `check` goes green again; fill them in the order of the legacy map's usage counts.
 - **First real run (2026-08-24)**: foundations executed from zero in a fresh repo. Legacy-only steps are now marked, `ds-rules` ships self-contained because a plugin skill cannot read outside the working directory, the generator renders `deviation`, and the probe runs against a dev build (`phases/foundations.md`, `traps.md`, Appendix A).
 
 ## Appendix E: sources

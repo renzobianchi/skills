@@ -30,6 +30,14 @@ jobs:
           cd "$T"
           node scripts/ds-manifest.mjs docs
           node scripts/ds-manifest.mjs check
+          # usage-doc guard, seen red twice and green once
+          sed -i 's/"status": "kit-ready"/"status": "parity"/; s/"codeConnect": true/"codeConnect": false/' src/next/parity/button.json ds.config.json
+          node scripts/ds-manifest.mjs docs
+          if node scripts/ds-manifest.mjs check; then echo "guard did not fail on a missing usage doc"; exit 1; fi
+          node scripts/ds-manifest.mjs usage button
+          if node scripts/ds-manifest.mjs check; then echo "guard did not fail on a placeholder"; exit 1; fi
+          cp "$OLDPWD/core/templates/usage/button.md" src/next/usage/button.md
+          node scripts/ds-manifest.mjs check
           npm init -y >/dev/null
           npm i -D vitest >/dev/null
           npx vitest run --globals
