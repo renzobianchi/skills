@@ -1,0 +1,12 @@
+{
+  "name": "renzobianchi-skills",
+  "owner": { "name": "Renzo Bianchi", "url": "https://github.com/renzobianchi" },
+  "metadata": { "description": "Agent skills by Renzo Bianchi." },
+  "plugins": [
+    {
+      "name": "ds-ai-ready",
+      "source": "./skills/ds-ai-ready",
+      "description": "Migrate or create a design system on shadcn so agents can build with it: phase skills, per-component parity manifests with guards, component rules, multi-tool adapters."
+    }
+  ]
+}

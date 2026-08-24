@@ -9,12 +9,20 @@ for dir in "$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.cursor/skills" "
   TARGETS="$TARGETS $dir"
 done
 [ -n "$TARGETS" ] || { echo "No agent directories found (~/.claude, ~/.codex, ~/.cursor, ~/.grok, ~/.gemini, ~/.config/opencode)."; exit 1; }
-for skill in "$REPO_DIR"/skills/*/; do
-  name="$(basename "$skill")"
+install_one() {
+  name="$(basename "$1")"
   for target in $TARGETS; do
     rm -rf "$target/$name"
-    cp -R "$skill" "$target/$name"
+    cp -R "$1" "$target/$name"
   done
   echo "installed: $name"
+}
+for skill in "$REPO_DIR"/skills/*/; do
+  if [ -f "$skill/SKILL.md" ]; then
+    install_one "$skill"
+  elif [ -d "$skill/adapters/claude/skills" ]; then
+    # A package (core + per-tool adapters): install its Claude skills, which are self-contained.
+    for sub in "$skill"/adapters/claude/skills/*/; do install_one "$sub"; done
+  fi
 done
 echo "→ into:$TARGETS"

@@ -1,0 +1,18 @@
+---
+description: Run one phase of the design-system migration (triage, foundations, kit, parity, component <key>, cleanup, patterns). Invoke by @-mentioning this rule.
+alwaysApply: false
+---
+
+The `@ds-ai-ready/...` references assume the package is vendored at `ds-ai-ready/` in the repo root; adjust the prefix otherwise.
+
+Read `ds.config.json` at the repo root. Ask which phase to run if not stated, then load exactly one of:
+
+- triage → @ds-ai-ready/core/phases/triage.md
+- foundations → @ds-ai-ready/core/phases/foundations.md
+- kit → @ds-ai-ready/core/phases/kit.md
+- parity → @ds-ai-ready/core/phases/parity.md
+- component <key> → @ds-ai-ready/core/phases/component.md, with @ds-ai-ready/core/rules.md
+- cleanup → @ds-ai-ready/core/phases/cleanup.md
+- patterns → @ds-ai-ready/core/phases/patterns.md
+
+Execute it end to end, stopping at every "Done when" to verify. Never start a component whose kit page is not at the ready marker.

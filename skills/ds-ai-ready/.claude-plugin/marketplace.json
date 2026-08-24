@@ -1,0 +1,15 @@
+{
+  "name": "ds-ai-ready",
+  "owner": { "name": "Renzo Bianchi" },
+  "metadata": {
+    "description": "Migrate or create a design system on shadcn so agents can build with it.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "ds-ai-ready",
+      "source": "./",
+      "description": "Phase skills (/ds-ai-ready:ds-migrate), component rules (ds-rules, model-invoked) and post-migration patterns."
+    }
+  ]
+}
