@@ -61,7 +61,7 @@ Break each guard deliberately once (rename a status, delete a doc line, paste a 
 
 From `templates/system-skill.md`: the project's namespace, primitives, generated-CSS path, reviewers and their review profiles, commit prefix, the tool flags. One tool-neutral source at `skills/<system>/SKILL.md`; every adapter is a pointer to it and holds no rules of its own, so a rule added for one tool cannot go missing in another. Unknown reviewers: keep the section with an explicit "not known yet", since an absent section claims there are none. Project-specific Tier 1 rules accumulate here; universal ones go upstream to `core/rules.md`.
 
-Install the adapter for each tool the team uses (`adapters/`). Cursor, Codex and Grok resolve `ds-ai-ready/core/...` from the repo root, so vendor `core/` there (copy or submodule; nothing keeps a copy current, note it as Tier 2). Claude: install the plugin, or copy `adapters/claude/skills/*` into `.claude/skills/`; all three are self-contained (rules inlined, phases under `references/`).
+Install the adapter for each tool the team uses (`adapters/`). Cursor, Codex and Grok resolve `ds-ai-ready/core/...` from the repo root, so vendor `core/` there (copy or submodule; nothing keeps a copy current, note it as Tier 2). Claude: install the plugin, or copy `adapters/claude/skills/*` into `.claude/skills/`; all four are self-contained (rules inlined, phases under `references/`).
 
 With `tracker: none`, Tier 2 findings go to a `FINDINGS.md` at the repo root, and the project skill says so; a gap with nowhere to go is the one teams lose.
 

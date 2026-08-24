@@ -16,6 +16,6 @@ Phase router. Read `ds.config.json` at the repo root (if absent, the only valid 
 
 Phase files name `templates/...`; those live at `references/templates/...`. Background for any phase, read only when a step points at it: `references/PLAYBOOK.md`.
 
-With no argument: read the manifests, report the queue (`kit-ready` sorted by dependency), the open gaps, and which phase applies next. Never start a component whose kit page is not at the ready marker.
+With no argument: read `../ds-help/SKILL.md` (sibling of this skill's folder), follow it, and stop. Never start a component whose kit page is not at the ready marker.
 
 Tier 1 findings from a run go to the package source (`core/phases/*.md`, `core/rules.md`), never to `references/`, which is regenerated.
