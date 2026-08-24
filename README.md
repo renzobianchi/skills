@@ -12,6 +12,14 @@ Design-exploration arena: N parallel candidates with assigned directions attack 
 npx skills add renzobianchi/skills --skill arena-design
 ```
 
+### [ds-ai-ready](skills/ds-ai-ready)
+
+Migrate a design system to shadcn, or start one from zero, so agents can build with it: phase skills (`/ds-migrate`), component rules that fire on the namespace (`ds-rules`), per-component parity manifests with guards, adapters for Claude Code, Cursor, Codex and Grok. Also a Claude Code plugin: `/plugin marketplace add renzobianchi/skills`.
+
+```sh
+git clone https://github.com/renzobianchi/skills && sh skills/install.sh
+```
+
 ### [html](skills/html)
 
 Standalone interactive HTML artifacts as the medium for agent↔designer conversation: review docs, variant boards, motion comparisons, copy ecosystems.
