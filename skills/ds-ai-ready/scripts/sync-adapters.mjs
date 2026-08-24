@@ -1,11 +1,15 @@
 #!/usr/bin/env node
-// Regenerates adapters/claude/skills/ds-rules/SKILL.md from core/rules.md and core/traps.md.
-// Why: a plugin skill cannot rely on reading files outside the working directory
-// (headless runs deny the Read without a prompt), so the model-invoked skill ships
-// the rules inline. Run after editing core/rules.md or core/traps.md.
+// Regenerates the Claude adapter from core/:
+//   ds-rules/SKILL.md            core/rules.md + core/traps.md inlined
+//   ds-migrate/references/       core/phases/*, core/templates/**, PLAYBOOK.md
+//   ds-patterns/references/      core/phases/patterns.md
+// Why: a skill cannot rely on reading files outside its own folder. A model-invoked
+// skill ships its rules inline; phase skills carry their phase files beside SKILL.md
+// so they work installed as a plugin or copied flat into ~/.claude/skills.
+// Run after editing anything under core/ or PLAYBOOK.md.
 //   node scripts/sync-adapters.mjs          # write
 //   node scripts/sync-adapters.mjs check    # exit 1 when the generated file is stale
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,12 +27,41 @@ description: "Rules for building components in a shadcn-based design system with
 Read \`ds.config.json\` at the repo root first; every branch below depends on it. If the repo has its own \`skills/<system>/SKILL.md\` (written in the foundations phase), its project rules add to these and never replace them. Apply everything below in full.
 `;
 
-const body = `${header}\n${read('core/rules.md')}\n\n${read('core/traps.md')}\n`;
-const current = readFileSync(join(root, target), 'utf8');
+const walk = (dir) => {
+  const out = [];
+  for (const f of readdirSync(join(root, dir)).sort()) {
+    const rel = join(dir, f);
+    if (statSync(join(root, rel)).isDirectory()) out.push(...walk(rel)); else out.push(rel);
+  }
+  return out;
+};
+
+// [destination, source] pairs; every destination is generated and owned by this script.
+const files = [[target, `${header}\n${read('core/rules.md')}\n\n${read('core/traps.md')}\n`]];
+const copies = [
+  ...walk('core/phases').map((f) => [`adapters/claude/skills/ds-migrate/references/${f.slice('core/'.length)}`, f]),
+  ...walk('core/templates').map((f) => [`adapters/claude/skills/ds-migrate/references/${f.slice('core/'.length)}`, f]),
+  ['adapters/claude/skills/ds-migrate/references/PLAYBOOK.md', 'PLAYBOOK.md'],
+  ['adapters/claude/skills/ds-patterns/references/patterns.md', 'core/phases/patterns.md'],
+];
+for (const [dst, src] of copies) files.push([dst, readFileSync(join(root, src), 'utf8')]);
+
+const generatedDirs = ['adapters/claude/skills/ds-migrate/references', 'adapters/claude/skills/ds-patterns/references'];
+const expected = new Set(files.map(([d]) => d));
+const present = generatedDirs.flatMap((d) => (existsSync(join(root, d)) ? walk(d) : []));
+const stray = present.filter((f) => !expected.has(f));
+
 if (process.argv[2] === 'check') {
-  if (current !== body) { console.error(`stale: run node scripts/sync-adapters.mjs`); process.exit(1); }
-  console.log('ok');
+  const stale = files.filter(([d, body]) => !existsSync(join(root, d)) || readFileSync(join(root, d), 'utf8') !== body).map(([d]) => d);
+  if (stale.length || stray.length) {
+    for (const f of stale) console.error(`stale: ${f}`);
+    for (const f of stray) console.error(`stray: ${f}`);
+    console.error('run node scripts/sync-adapters.mjs');
+    process.exit(1);
+  }
+  console.log(`ok: ${files.length} generated files`);
 } else {
-  writeFileSync(join(root, target), body);
-  console.log(`wrote ${target}`);
+  for (const d of generatedDirs) rmSync(join(root, d), { recursive: true, force: true });
+  for (const [d, body] of files) { mkdirSync(dirname(join(root, d)), { recursive: true }); writeFileSync(join(root, d), body); }
+  console.log(`wrote ${files.length} files`);
 }
