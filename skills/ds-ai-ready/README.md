@@ -58,3 +58,16 @@ Every PR used to edit one shared `parity.json`, one `PARITY.md`, one `LEGACY-MAP
 | `primitives` | `base-ui` / `radix` | which state selectors are alive |
 | `manifests.commitDocs` | bool | generated docs committed and guarded, or only rendered |
 | `markers` | emoji | kit page lifecycle, default 🟡 → 🟢 → 🔄 |
+
+## Credits and sources
+
+The method is distilled from one real migration and from these published works, credited in full in `PLAYBOOK.md`, Appendix E. Ideas are borrowed; no text or code from them is reproduced here.
+
+- Matt Rothenberg, "Speaking design at scale" and "You don't have a design system": the vocabulary layer and decisions above components.
+- Futurice, "Spec-driven design": knowledge base in the repo, decision logs, living specs, intent and cognitive debt.
+- Vercel, "Teaching agents product design": skill plus linters plus review loop, observable rules with stable ids.
+- Kaelig Deloumeau-Prigent, "Design system components with AI agent teams": budgets and exit criteria, the unverified list, creation separated from evaluation.
+- shadcn's agent tooling (evals, audit checklists, the Radix to Base UI migration notes).
+- The State of AI in Design Systems report (2026): the catalog of techniques the priorities were chosen from.
+
+Third-party tools referenced by name and used as-is under their own licenses: [shadcn/ui](https://ui.shadcn.com) (MIT), [Base UI](https://base-ui.com) (MIT), [Radix UI](https://www.radix-ui.com) (MIT), [Tailwind CSS](https://tailwindcss.com) (MIT), [Storybook](https://storybook.js.org) (MIT), [Vitest](https://vitest.dev) (MIT), [Figma](https://www.figma.com) and [Paper](https://paper.design). The manifest script, guard tests and templates in `core/templates/` are original to this package (MIT, see the repository license). If a credit is missing, open an issue and it gets added.
