@@ -12,7 +12,7 @@ Copy `templates/ds.config.json` to the repo root and fill it. Every later phase 
 - `primitives`: `base-ui` or `radix`. Pick what shadcn currently defaults to; never mix.
 - `manifests.commitDocs`: whether generated `PARITY.md`/`LEGACY-MAP.md` are committed (guarded for equality) or only rendered.
 
-**Done when:** the file exists and `node scripts/ds-manifest.mjs check` runs (on an empty manifest dir it reports zero components, not an error).
+**Done when:** the file exists, `node scripts/ds-manifest.mjs docs` then `check` both exit 0 with `0 parity, 0 legacy`. Order matters: with `commitDocs: true`, `check` compares against the committed doc, so on a repo with no doc yet it fails as "stale" until `docs` has run once (Tier 1, first run).
 
 ## 2. Write the RFC
 
@@ -40,7 +40,7 @@ Phase order, and why Tailwind consolidation is last: the legacy styling toolchai
 
 ## 4. Install manifests and guards
 
-Copy `templates/scripts/ds-manifest.mjs` and `templates/tests/*.test.ts` into the repo; add `"ds:docs": "node scripts/ds-manifest.mjs docs"` and `"ds:check": "node scripts/ds-manifest.mjs check"` to `package.json`; wire the tests into the existing runner. Create the first `manifests.parity/<seed>.json`.
+Copy `templates/scripts/ds-manifest.mjs` to `scripts/` and `templates/tests/*.test.ts` to the test folder the runner already scans (the test imports `../scripts/ds-manifest.mjs`, so keep them one level apart or fix the import). The test uses bare `describe`/`it`: under Vitest set `test.globals: true` in the config or run with `--globals`; under Jest nothing to do (Tier 1, first run). Add `"ds:docs": "node scripts/ds-manifest.mjs docs"` and `"ds:check": "node scripts/ds-manifest.mjs check"` to `package.json`; wire the tests into the existing runner. Create the first `manifests.parity/<seed>.json`.
 
 Break each guard deliberately once (rename a status, delete a doc line) and watch it fail naming the module. A guard never seen failing is not a guard.
 

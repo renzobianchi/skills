@@ -1,4 +1,6 @@
-// Guards over the per-component manifests. Works under jest or vitest.
+// Guards over the per-component manifests. Works under jest, or vitest with
+// `test.globals: true` (bare describe/it). Expects to live one folder below
+// the repo root, beside `scripts/`.
 // Every assertion names the offending module: a red check that says
 // "expected true" costs a reviewer a round trip.
 import { readFileSync, existsSync } from 'fs';
