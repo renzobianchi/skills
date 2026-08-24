@@ -11,6 +11,7 @@ Check, in order. Any miss stops the phase and reports which.
 - Kit page carries the ready marker and the manifest file says `kit-ready`. If the kit says ready and no file exists, create the file now (a component found without a row gets its row in the same turn; deferring to "the build PR" is how manifests lag the kit).
 - Every part the component composes is `parity`.
 - The manifest `note` carries the decisions already taken (composition model, accepted asymmetries, deviations).
+- Every part the component composes has a usage doc, so the composite's doc can point at them instead of restating.
 - Open low-confidence questions have answers from the design owner.
 - *(tracker)* An issue exists for the component in `trackerProject`, state Ready or Todo. If not, create it: title `<Component>`, description = the manifest note plus the DoR checklist, estimate by composite vs core, blocked-by links to unfinished parts.
 
@@ -43,9 +44,10 @@ Follow `rules.md` → Build procedure, kit-first, under its budgets. *(figma)* t
 - Legacy map: if this component replaces legacy exports, edit `manifests.legacy/<Export>.json` for each: status `replaced`, `next: ["<key>"]`.
 - Run `node scripts/ds-manifest.mjs docs` to regenerate `PARITY.md` and `LEGACY-MAP.md`; commit the result if `commitDocs: true`.
 - *(codeConnect)* Write `<key>.figma.tsx` (see `phases/parity.md` → Code Connect rules); `npx figma connect parse --dir <namespace>` passes.
+- Usage doc, the component's contract for callers (the manifest `note` is for builders; an agent composing a screen reads the usage doc, never the manifest): `node scripts/ds-manifest.mjs usage <key>` scaffolds `manifests.usage/<key>.md` from the manifest. Fill every `<fill>`: core component, from the registry's docs page for that component (usage, examples, the "when" the docs give) plus the call-site audit from triage (what the product actually does with it); composite, from the usage docs of its parts plus the kit page description. Boundaries are the valuable lines ("a `Dialog` interrupts; for a side task that keeps the page usable, `Sheet`"), so write at least one per component. Then hand the doc to the design owner with one question: what do callers get wrong with this component, and what do they ask for that it should refuse? Their answer goes under Owner notes in their own sentences, or "none yet".
 - Run the guards: `npm test -- ds-manifest`.
 
-**Done when:** `node scripts/ds-manifest.mjs check` prints `ok` and the diff touches no manifest file other than this component's and the legacy exports it replaces.
+**Done when:** `node scripts/ds-manifest.mjs check` prints `ok` (usage doc present, zero placeholders), Owner notes is filled or says "none yet", and the diff touches no manifest file other than this component's and the legacy exports it replaces.
 
 ## 6. Pre-flight
 

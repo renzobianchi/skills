@@ -1,6 +1,6 @@
 {
   "name": "ds-ai-ready",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Migrate or create a design system on shadcn so agents can build with it: phase skills, per-component parity manifests with guards, component rules, multi-tool adapters.",
   "author": { "name": "Renzo Bianchi" },
   "skills": "./adapters/claude/skills"

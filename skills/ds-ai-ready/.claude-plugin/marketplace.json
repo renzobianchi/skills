@@ -3,7 +3,7 @@
   "owner": { "name": "Renzo Bianchi" },
   "metadata": {
     "description": "Migrate or create a design system on shadcn so agents can build with it.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {

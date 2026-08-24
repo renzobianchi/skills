@@ -49,7 +49,7 @@ Phase order, and why Tailwind consolidation is last: the legacy styling toolchai
 
 ## 4. Install manifests and guards
 
-Copy `templates/scripts/ds-manifest.mjs` to `scripts/` and `templates/tests/*.test.ts` to the test folder the runner already scans (the test imports `../scripts/ds-manifest.mjs`, so keep them one level apart or fix the import). The test uses bare `describe`/`it`: under Vitest set `test.globals: true` in the config or run with `--globals`; under Jest nothing to do (Tier 1, first run). Add `"ds:docs": "node scripts/ds-manifest.mjs docs"` and `"ds:check": "node scripts/ds-manifest.mjs check"` to `package.json`; wire the tests into the existing runner. Create the first `manifests.parity/<seed>.json`.
+Copy `templates/scripts/ds-manifest.mjs` to `scripts/` and `templates/tests/*.test.ts` to the test folder the runner already scans (the test imports `../scripts/ds-manifest.mjs`, so keep them one level apart or fix the import). The test uses bare `describe`/`it`: under Vitest set `test.globals: true` in the config or run with `--globals`; under Jest nothing to do (Tier 1, first run). Add `"ds:docs": "node scripts/ds-manifest.mjs docs"` and `"ds:check": "node scripts/ds-manifest.mjs check"` to `package.json`; wire the tests into the existing runner. Create the first `manifests.parity/<seed>.json` and, once the seed reaches `parity`, its usage doc (`node scripts/ds-manifest.mjs usage <seed>`, then fill it; `check` refuses a `parity` component without one).
 
 If tests are type-checked, add a `ds-manifest.d.mts` beside the script instead of editing either file, so both stay re-copyable from the template.
 

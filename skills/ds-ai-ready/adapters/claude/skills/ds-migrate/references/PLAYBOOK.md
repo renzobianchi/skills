@@ -255,6 +255,16 @@ Rules:
 
 ---
 
+### Step 4.5 Usage docs: the caller's contract, per component
+
+The manifest tells a builder what the component is; nothing so far tells a caller when to reach for it. An agent composing a screen from prop names picks the variant that compiles. So every component at `parity` carries `usage/<key>.md`, next to the manifests, one file per component so it inherits the no-conflict property of Step 4.1.
+
+Sections, in this order: Use when · Use something else when (the boundary with the nearest component; the most valuable lines in the file) · Variants (each axis value mapped to an intent) · Composition (each `composeOnly` entry mapped to the child that renders it) · Decisions (from the manifest note) · Owner notes.
+
+Sources, in order of authority: the registry's docs page for a core component (shadcn documents usage and examples per component, and the kit was built from that registry); the parts' usage docs for a composite; the call-site audit from triage for what the product actually does with it; then the design owner, asked one question: what do callers get wrong with this component, and what do they ask for that it should refuse? Their sentences go in verbatim under Owner notes. The owner's perspective is the part no registry has and the reason the file exists in the repo rather than as a link to the docs.
+
+Scaffolded, never retyped: `scripts/ds-manifest.mjs usage <key>` writes the skeleton from the manifest with `<fill>` markers; `check` fails while a marker survives or the file is missing for a `parity` component. Kept honest the same way as the manifest: a change to an axis changes the usage doc in the same PR, and a caller who finds the doc and the code disagreeing fixes the doc first, because a stale contract is the one agents follow with confidence.
+
 ## 5. Phase 4: the component loop, one-per-PR
 
 **Goal:** drain the `kit-ready` queue, one component per branch and PR, each landing with stories, manifest updates, and Code Connect, through normal review, without breaking the release pipeline.
@@ -553,11 +563,16 @@ Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-n
 
 Named by exported name. Fields: `status` (`replaced` | `absorbed` | `deprecated` | `kept` | `undecided`) · `next` (module keys, only when replaced) · `proposedNext` (candidates while undecided or absorbed) · `usage` (importing files per consumer, from triage) · `aliases` · `note`.
 
+### usage/<key>.md (one file per module at parity)
+
+The caller's contract (Step 4.5). Scaffolded by `scripts/ds-manifest.mjs usage <key>`; sections Use when · Use something else when · Variants · Composition · Decisions · Owner notes.
+
 ### Guards (`npm test`, `scripts/ds-manifest.mjs check`)
 
 - Every manifest file has a valid status; `next` non-empty iff `replaced`; every referenced module exists; every `parity` entry with a Figma component set has its `.figma.tsx` when Code Connect is on.
 - Committed `PARITY.md` and `LEGACY-MAP.md` equal the generated output; exactly one copy of each section.
 - Every export in the package index has a legacy file or alias.
+- Every `parity` module has a usage doc with no `<fill>` marker left.
 
 ---
 
@@ -641,6 +656,7 @@ Changes folded into this revision after the first draft, so a reader of an older
 - **Kit-wip marker is 🟡** (was ⚪️); markers configurable (§3.3, §7.6).
 - **Multi-tool packaging**: tool-agnostic core plus adapters for Claude Code, Codex, Cursor and Grok (§7.1).
 - **`ds.config.json`** as the single place every optional branch is decided (§7.6).
+- **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A).
 - **First real run (2026-08-24)**: foundations executed from zero in a fresh repo. Legacy-only steps are now marked, `ds-rules` ships self-contained because a plugin skill cannot read outside the working directory, the generator renders `deviation`, and the probe runs against a dev build (`phases/foundations.md`, `traps.md`, Appendix A).
 
 ## Appendix E: sources
