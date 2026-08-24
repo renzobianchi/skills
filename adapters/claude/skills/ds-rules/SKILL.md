@@ -129,3 +129,8 @@ Each fails silently and masquerades as a component bug or a design decision. Che
 | Docs-only PR under conventional commits | a release ships with an empty changelog | expect it; tell people |
 | Self-review finding taken on faith | a fix for a jump that does not exist | measure the finding frame by frame before fixing |
 | Definition-of-done living in a status update | the artifact is forgotten for weeks (36 mappings for 55 modules) | turn it into a guard that fails per component |
+| `--color-*` alias in hand-written CSS | dark wrapper white, children dark | reference raw tokens (`var(--background)`) in `theme.css`; aliases compute once on `:root` |
+| Console probe against `storybook build` | green on a component that drops refs | probe against `storybook dev`; production React strips every warning |
+| `&:is(.dark *)` with the class on a wrapper | wrapper background stays light | `&:where(.dark, .dark *)`, commented so a diff does not revert it |
+| Tailwind auto source detection | a class appears because of where a file sits | `source(none)` plus explicit `@source` per folder |
+| `@base-ui-components/react` | pinned at an rc, deprecation notice | the package is `@base-ui/react` |
