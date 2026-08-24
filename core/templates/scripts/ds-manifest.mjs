@@ -72,6 +72,12 @@ export const renderParityDoc = (config, { parity }) => {
     .filter((k) => ['gap-code', 'gap-kit', 'decision-needed'].includes(parity[k].status))
     .sort()
     .map((k) => `- ${displayName(k)} (${parity[k].status})`);
+  // Standing deviations (forwardRef shims, token over upstream literal) live in the
+  // manifest; rendering them here is what keeps the doc from needing a hand edit.
+  const deviations = Object.keys(parity)
+    .filter((k) => parity[k].deviation)
+    .sort()
+    .map((k) => `- ${displayName(k)}: ${parity[k].deviation}`);
   const m = config.markers;
   return [
     '# Kit ↔ code parity',
@@ -83,6 +89,7 @@ export const renderParityDoc = (config, { parity }) => {
     section(`${m.wip} Kit-wip (the queue behind the queue)`, by('kit-wip')),
     section('Code-only (deliberate, not a gap)', by('code-only')),
     `## Gaps\n\n${gaps.length ? gaps.join('\n') : '_none_'}\n`,
+    `## Deviations\n\n${deviations.length ? deviations.join('\n') : '_none_'}\n`,
   ].join('\n');
 };
 

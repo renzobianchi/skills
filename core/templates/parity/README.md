@@ -10,4 +10,6 @@ One file per module in the new namespace, named by the module key (`button.json`
 
 State axes (Hover/Focus/Pressed/Disabled) are excluded; Loading is included as a capability.
 
+`deviation` is one line per standing divergence from upstream or from the kit; the generator renders it under Deviations in the parity doc, so it never needs a hand edit there.
+
 Edit with targeted string replacement; never round-trip through a formatter. Regenerate docs with `node scripts/ds-manifest.mjs docs`; validate with `check`.
