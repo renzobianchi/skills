@@ -1,0 +1,20 @@
+{
+  "design": {
+    "tool": "figma",
+    "fileKey": "<file-key>",
+    "page": "<page-id>",
+    "componentSet": "Button",
+    "componentSetId": "<set-id>"
+  },
+  "status": "kit-ready",
+  "axes": {
+    "variant": {
+      "code": ["default", "secondary", "outline", "ghost", "destructive", "link"],
+      "figma": ["Default", "Secondary", "Outline", "Ghost", "Destructive", "Link"]
+    },
+    "size": { "code": ["sm", "default", "lg", "icon"], "figma": ["sm", "default", "lg", "icon"] }
+  },
+  "composeOnly": ["State=Loading (Spinner child + disabled, no loading prop)", "Show Icon (icon child)"],
+  "deviation": "",
+  "note": "Decisions taken for this component, in order. Read before touching it. Loading is composition, decided <date> with the design owner."
+}

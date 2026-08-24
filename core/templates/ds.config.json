@@ -1,0 +1,25 @@
+{
+  "$comment": "Project config for ds-ai-ready. Written once in the foundations phase; every phase reads it. Paths are relative to the repo root.",
+  "namespace": "src/next",
+  "legacyPath": "src/components",
+  "primitives": "base-ui",
+  "designTool": "figma",
+  "design": {
+    "figmaFileKey": "",
+    "kitName": "",
+    "paperProjectPath": ""
+  },
+  "codeConnect": true,
+  "tracker": "linear",
+  "trackerProject": "",
+  "reviewers": [],
+  "manifests": {
+    "parity": "src/next/parity",
+    "legacy": "src/next/legacy",
+    "parityDoc": "PARITY.md",
+    "legacyDoc": "LEGACY-MAP.md",
+    "commitDocs": true
+  },
+  "commitSubjectPrefix": "/next",
+  "markers": { "wip": "🟡", "ready": "🟢", "done": "🔄" }
+}
