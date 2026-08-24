@@ -16,6 +16,7 @@
   "manifests": {
     "parity": "src/next/parity",
     "legacy": "src/next/legacy",
+    "usage": "src/next/usage",
     "parityDoc": "PARITY.md",
     "legacyDoc": "LEGACY-MAP.md",
     "commitDocs": true
