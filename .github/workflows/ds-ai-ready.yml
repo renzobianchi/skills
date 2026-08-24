@@ -1,0 +1,35 @@
+name: ds-ai-ready
+on:
+  pull_request:
+    paths: ["skills/ds-ai-ready/**"]
+  push:
+    branches: [main]
+    paths: ["skills/ds-ai-ready/**"]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: skills/ds-ai-ready
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generated Claude skills match core/
+        run: node scripts/sync-adapters.mjs check
+      - name: Manifest script and guard test on the templates
+        run: |
+          T=$(mktemp -d)
+          mkdir -p "$T/scripts" "$T/tests" "$T/src/next/parity" "$T/src/next/legacy"
+          cp core/templates/ds.config.json "$T/"
+          cp core/templates/scripts/ds-manifest.mjs "$T/scripts/"
+          cp core/templates/tests/ds-manifest.test.ts "$T/tests/"
+          cp core/templates/parity/button.json "$T/src/next/parity/"
+          cp core/templates/legacy/Button.json "$T/src/next/legacy/"
+          cd "$T"
+          node scripts/ds-manifest.mjs docs
+          node scripts/ds-manifest.mjs check
+          npm init -y >/dev/null
+          npm i -D vitest >/dev/null
+          npx vitest run --globals
