@@ -7,6 +7,8 @@ description: "Rules for building components in <package>. Use when editing files
 
 Read `ds.config.json` at the repo root, then `<path-to>/core/rules.md`. Every rule there applies; this file adds only what is specific to this repository.
 
+Before composing a screen from namespace components, read `<manifests.usage>/<key>.md` for each one; before touching a component, its manifest `note`.
+
 ## Repository facts
 
 - Namespace: `<namespace>`; legacy: `<legacyPath>` (bug-fix only).

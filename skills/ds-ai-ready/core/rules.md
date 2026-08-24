@@ -41,13 +41,15 @@ Rules for every component in the new namespace. Each carries the failure it prev
 
 16. **Manifest edits go to the component's own file** (`manifests.parity/<key>.json`), by targeted string replacement. Generated docs (`PARITY.md`, `LEGACY-MAP.md`) are regenerated with `node scripts/ds-manifest.mjs docs`; a hand edit is overwritten by the next run and fails `check` until then.
 
+17. **Read the usage doc before composing with a namespace component; write it before declaring parity.** `manifests.usage/<key>.md` is the caller's contract (when, which variant, what to compose, the owner's warnings); the manifest is the builder's. A screen built from prop names alone picks the variant that compiles, not the one the product means. When the usage doc and the code disagree, fix the doc in the same PR; a stale contract is the one agents follow with confidence.
+
 ## Build procedure (kit-first)
 
 1. Read `manifests.parity/<key>.json` (the `note` carries the decisions) and the tracker issue if `tracker != none`.
 2. Audit the live set. Figma: analyze the component set, walk the tree resolving tokens (fills, strokes, radii, padding, text styles), and read `textTruncation` and `maxLines` on every TEXT node by name (the tree walk omits them). Paper: open the component, read every property and the applied tokens, export one image per variant. Record measurements in the PR description draft; do not eyeball.
 3. Core component: `npx shadcn add <name>` then adapt, keeping the file diffable. Composite: compose from namespace parts. Zero raw `<button>`/`<select>`.
 4. Verify computed styles in the running Storybook, light and dark: fonts, colors, row heights, scroll behavior, every state via its story (never a scripted `click()`).
-5. Update the component's manifest file to `parity` only after step 4 matches per axis; run the generator; run the guards.
+5. Update the component's manifest file to `parity` only after step 4 matches per axis; write the usage doc (`phases/component.md`, step 5); run the generator; run the guards.
 
 **Done when:** every recorded measurement matches in both modes in the browser.
 
@@ -71,7 +73,7 @@ Score each decision. High confidence: decide silently, record in the manifest `n
 - [ ] Stories demonstrate behavior for real (an overflow story overflows; every state has a story)
 - [ ] Dead-selector grep zero; console free of ref warnings across stories
 - [ ] `codeConnect: true` → `<key>.figma.tsx` written and `npx figma connect parse --dir <namespace>` passes
-- [ ] Manifest file updated; generator run; guards green
+- [ ] Manifest file updated; usage doc filled, Owner notes answered; generator run; guards green
 - [ ] Every commit passes commitlint locally; subject starts with `commitSubjectPrefix`
 - [ ] Self-review pass on the diff (see `phases/component.md`, step 7)
 - [ ] Design-owner preview in Storybook, handed off with the hand-off list

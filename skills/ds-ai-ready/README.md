@@ -9,7 +9,7 @@ core/
   rules.md              rules the agent applies on every component (model-invoked)
   traps.md              silent failures that masquerade as component bugs
   phases/               one file per phase: triage, foundations, kit, parity, component, cleanup, patterns
-  templates/            ds.config.json, per-component manifests, ds-manifest.mjs, guard tests,
+  templates/            ds.config.json, per-component manifests and usage docs, ds-manifest.mjs, guard tests,
                         the project's own skill, RFC addendum
 .claude-plugin/         plugin.json and marketplace.json (install as a Claude Code plugin)
 adapters/
@@ -47,6 +47,10 @@ Codex / Grok / Cursor read `core/` by path from the repo root, so vendor the pac
 ## One manifest per component
 
 Each component owns one file: `parity/<key>.json` (kit and code axes, status, decisions) and, for a migration, `legacy/<Export>.json`. A component PR touches its own manifest and its own source; nothing shared. `PARITY.md` and `LEGACY-MAP.md` are generated from the manifests by `node scripts/ds-manifest.mjs docs` and a guard fails when they drift, so the docs stay honest and nobody edits them by hand. Result: approved PRs stay mergeable after another one lands, and no review is dismissed by a conflict resolution.
+
+## One usage doc per component
+
+Beside the manifest, `usage/<key>.md` tells an agent when to use the component, which variant serves which intent, what to compose, and what the design owner says callers get wrong. `node scripts/ds-manifest.mjs usage <key>` scaffolds it from the manifest; the builder fills it from the registry docs or the parts' docs; the owner adds their notes in their own words. `check` refuses a `parity` component without one. The manifest is for whoever builds the component; the usage doc is for whoever builds with it.
 
 ## Config flags
 

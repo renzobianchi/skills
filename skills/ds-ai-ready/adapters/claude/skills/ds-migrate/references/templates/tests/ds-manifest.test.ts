@@ -14,7 +14,7 @@ const config = loadConfig(root);
 const manifests = loadManifests(config, root);
 
 describe('parity manifests', () => {
-  it('validate (statuses, references, code connect mappings)', () => {
+  it('validate (statuses, references, usage docs, code connect mappings)', () => {
     expect(validate(config, manifests, root)).toEqual([]);
   });
 

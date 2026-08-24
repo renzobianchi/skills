@@ -12,4 +12,6 @@ State axes (Hover/Focus/Pressed/Disabled) are excluded; Loading is included as a
 
 `deviation` is one line per standing divergence from upstream or from the kit; the generator renders it under Deviations in the parity doc, so it never needs a hand edit there.
 
+Every component at `parity` has a usage doc at `manifests.usage/<key>.md` (scaffold: `node scripts/ds-manifest.mjs usage <key>`); `check` fails when it is missing or still carries a `<fill>` placeholder.
+
 Edit with targeted string replacement; never round-trip through a formatter. Regenerate docs with `node scripts/ds-manifest.mjs docs`; validate with `check`.
