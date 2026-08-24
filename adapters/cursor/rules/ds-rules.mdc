@@ -4,6 +4,8 @@ globs: src/next/**,ds.config.json,PARITY.md,LEGACY-MAP.md
 alwaysApply: false
 ---
 
+The `@ds-ai-ready/...` references assume the package is vendored at `ds-ai-ready/` in the repo root; adjust the prefix otherwise.
+
 Read `ds.config.json` at the repo root first. If `namespace` differs from `src/next`, edit the `globs` line above to match.
 
 Apply every rule in @ds-ai-ready/core/rules.md before writing code under the namespace. When a symptom looks like a component bug, check @ds-ai-ready/core/traps.md before changing the component.

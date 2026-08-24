@@ -1,5 +1,7 @@
 # AGENTS.md (design-system migration)
 
+Paths below assume the package is vendored at `ds-ai-ready/` in the repo root (copy or git submodule). If it lives elsewhere, replace the prefix.
+
 Append this file's content to the repo's `AGENTS.md`, or copy it there if none exists. Codex reads `AGENTS.md` from the repo root and from the directory of the file being edited; place a copy under the namespace folder (`src/next/AGENTS.md`) so the rules load whenever a file there is touched.
 
 ## Always

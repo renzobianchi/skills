@@ -1,5 +1,7 @@
 # AGENTS.md (design-system migration), Grok
 
+Paths below assume the package is vendored at `ds-ai-ready/` in the repo root (copy or git submodule). If it lives elsewhere, replace the prefix.
+
 Grok Build / Grok Code reads `AGENTS.md` from the repo root. Copy this file there (or append to the existing one). The content is identical to the Codex adapter except for the review command.
 
 ## Always
