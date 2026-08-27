@@ -36,4 +36,4 @@ npx skills add renzobianchi/skills
 
 Installs into every agent the [`skills` CLI](https://skills.sh) detects. Without npm: `git clone https://github.com/renzobianchi/skills && sh skills/install.sh`.
 
-Each skill's README lists its optional integrations and credits.
+Each skill's README lists its optional integrations and credits. The repository is MIT; `skills/ds-ai-ready` carries its own Apache 2.0 license.

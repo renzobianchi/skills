@@ -76,4 +76,8 @@ The method is distilled from one real migration and from these published works, 
 - shadcn's agent tooling (evals, audit checklists, the Radix to Base UI migration notes).
 - The State of AI in Design Systems report (2026): the catalog of techniques the priorities were chosen from.
 
-Third-party tools referenced by name and used as-is under their own licenses: [shadcn/ui](https://ui.shadcn.com) (MIT), [Base UI](https://base-ui.com) (MIT), [Radix UI](https://www.radix-ui.com) (MIT), [Tailwind CSS](https://tailwindcss.com) (MIT), [Storybook](https://storybook.js.org) (MIT), [Vitest](https://vitest.dev) (MIT), [Figma](https://www.figma.com) and [Paper](https://paper.design). The manifest script, guard tests and templates in `core/templates/` are original to this package (MIT, see the repository license). If a credit is missing, open an issue and it gets added.
+Third-party tools referenced by name and used as-is under their own licenses: [shadcn/ui](https://ui.shadcn.com) (MIT), [Base UI](https://base-ui.com) (MIT), [Radix UI](https://www.radix-ui.com) (MIT), [Tailwind CSS](https://tailwindcss.com) (MIT), [Storybook](https://storybook.js.org) (MIT), [Vitest](https://vitest.dev) (MIT), [Figma](https://www.figma.com) and [Paper](https://paper.design). The manifest script, guard tests and templates in `core/templates/` are original to this package. If a credit is missing, open an issue and it gets added.
+
+## License
+
+Apache License 2.0 (`LICENSE` in this folder; it overrides the repository's root license for everything under `skills/ds-ai-ready/`). Redistributing the package or a derivative means keeping the `LICENSE` and `NOTICE` files, and the `NOTICE` says how to credit it.
