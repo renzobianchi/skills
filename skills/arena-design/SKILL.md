@@ -84,13 +84,13 @@ Research is closed when the memo exists and states which pattern source ran and 
 
 ## 3. Fan out
 
-Spawn all N in one message as background subagents. Each receives: the problem, the grounding memo, ITS assigned direction (not the others'), its output, the medium reference, and the obligation to deliver a **visible artifact + rationale**.
+Spawn all N in one message as background subagents. Each receives: the problem, the grounding memo, ITS assigned direction (not the others'), its container (section, artboard, route or file) with the medium reference's canvas contract (every node it creates lives inside that container, rationale included), and the obligation to deliver a **visible artifact + rationale**.
 
 The rationale names: which UX decisions it made and why, which alternatives within its direction it discarded, and where its direction suffers (the declared weak point is worth more than the strong one).
 
 A candidate that produces no visible artifact is a **dropout**: continue with N-1 and note it.
 
-Fan out is closed when every live candidate has a renderable artifact at its output and a rationale with discarded alternatives and a declared weak point.
+Fan out is closed when every live candidate has a renderable artifact inside its container, a rationale with discarded alternatives and a declared weak point, and, in Paper or Figma, the parent's orphan sweep (medium reference) finds nothing outside the containers.
 
 ## 4. Cross-judge
 
@@ -115,6 +115,8 @@ Graft is closed when the synthesis note records base, grafts with source, reject
 ## 7. Verify
 
 Final render of the synthesized artifact in the real medium, against the rubric and with the real content at its edge cases (long string, empty list, dark mode when applicable). For code: in the browser, not in the diff. If something fails that a loser solved, go back to Graft.
+
+In Paper or Figma the synthesis lives in its marked container (medium reference: set apart, distinct fill, a `VERDICT` block naming base, grafts and scores), so a reader opening the file a week later tells the verdict from the explorations at a glance. Verify is closed when the render passes and the canvas holds exactly the N direction containers plus the marked synthesis.
 
 ## Outputs
 

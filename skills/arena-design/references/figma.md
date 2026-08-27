@@ -6,6 +6,14 @@ Either MCP runs the arena on its own. **Detection order**: probe Figma Console f
 
 One **Section per candidate**, named `arena/<slug>/<direction>`, all on the same page (create the `Arena <slug>` page if absent, checking for an existing one first to avoid duplicates). The parent creates the sections before the fan out and passes each candidate its section's nodeId.
 
+## Canvas contract
+
+The section is the candidate's whole footprint. Every node a candidate creates (frames, screens, rationale text, sticky notes, annotations) is a child of its section: `figma.createFrame()` then `section.appendChild(frame)` in the same `figma_execute` call, never `figma.currentPage.appendChild`. The rationale goes in one text node named `rationale` at the top-left inside the section, so the judge screenshot carries it. A node dropped on the page reads as nobody's and ends up judged with the wrong direction.
+
+Orphan sweep, run by the parent right after the fan out and again after Graft: `figma.currentPage.children` filtered to nodes that are not a section named `arena/<slug>/...`. Each orphan is reparented into the section whose direction it belongs to (by its name or the candidate that reported it); an orphan nobody claims goes into `arena/<slug>/unsorted`, never deleted. The sweep is closed when the page's top-level children are exactly N direction sections plus, after Verify, the synthesis section.
+
+Synthesis is marked so it never reads as one more direction: section `arena/<slug>/synthesis`, placed one section-width to the right of the last direction, with a distinct section fill (`section.fills`, the file's accent or a muted green) and a text node named `VERDICT` at its top-left stating base, grafts with source, and the judge's scores. Direction sections keep the default fill.
+
 ## Path A: Figma Console (preferred)
 
 Writes via `figma_execute` (Plugin API):
@@ -30,4 +38,4 @@ Judge render: `get_screenshot` per section, N images with direction labels.
 
 ## Verify (both)
 
-The synthesized artifact goes in its own `arena/<slug>/synthesis` section, assembled from real kit components, with a final screenshot against the rubric. If the work targets a design-system kit, also run whatever parity check the repo requires.
+The synthesized artifact goes in the marked `arena/<slug>/synthesis` section (Canvas contract), assembled from real kit components, with a final screenshot against the rubric. Run the orphan sweep once more; Verify is closed only when the page's top level is exactly the N direction sections plus synthesis. If the work targets a design-system kit, also run whatever parity check the repo requires.
