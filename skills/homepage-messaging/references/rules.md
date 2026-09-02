@@ -3,7 +3,7 @@
 Grade every line against these. Each names the failure and a before/after from the source posts. Cite the number in an audit.
 
 1. **Lead with the capability, close with the benefit.** Leading with the outcome forces the reader to dig for what the product does. Walnut leads with an outcome; Tango leads with what you do.
-2. **Never lead with a business outcome.** Any vendor can claim it. Stripe: "Financial infrastructure to grow your revenue" → "Accept payments, offer financial services and build custom revenue models."
+2. **Lead with what the product does; the business outcome closes.** Any vendor can claim the outcome. Stripe: "Financial infrastructure to grow your revenue" → "Accept payments, offer financial services and build custom revenue models."
 3. **First-order benefits only.** The further from what the product does, the less believable. "More leads, less effort" → PhantomBuster "gets you contact information." Vidyard's "close more deals" is fourth order.
 4. **The hero answers one of two questions:** "which of my tools does this replace?" or "which tasks in my job would this help me with?"
 5. **The hero answers what is it, who is it for, what does it let me do.** FigJam, Mural and Miro heroes read like the first slide of an investor deck.

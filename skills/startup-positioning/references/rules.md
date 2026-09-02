@@ -4,7 +4,7 @@ Run every candidate strategy and every one-sentence positioning through these. E
 
 1. **One thing about the market, one about the product.** Failure: "Connect everything. Achieve anything." (Airtable) says nothing. Correct: "a business bank account for startups" (Mercury).
 2. **Lead with the clearest anchor, usually the capability.** Benefits and problems "could apply to countless products." Surfe leads with what it does.
-3. **Never lead with a business outcome in a competitive category.** Every vendor claims it, and the founder now competes with "hire two more reps." "The CRM that drives business growth" (Pipedrive) is the failure.
+3. **Lead with the capability in a competitive category; the outcome comes last.** Every vendor claims the outcome, and an outcome lead puts the founder in competition with "hire two more reps." "The CRM that drives business growth" (Pipedrive) is the failure.
 4. **Diagnose market maturity before choosing the anchor.** Vanta in 2018: "Stop managing your SOC 2 audit in spreadsheets," not "the best SOC 2 automation platform," because the category did not exist yet.
 5. **In an immature market the competitor is the status quo, not other startups.** Apideck positioned against building integrations in-house, not against Merge or Codat.
 6. **One primary competitive alternative.** Combining every argument yields a message that is "generic, bloated, and forgettable." Airtable chose spreadsheets and databases.
@@ -28,4 +28,4 @@ Run every candidate strategy and every one-sentence positioning through these. E
 24. **Positioning goes on the homepage; it is not A/B tested.** Sales-led validation takes about two years and a test signals no conviction. Calendly held one line for eleven years.
 25. **Clarity before differentiation.** "You only get to differentiation after you have solved for clarity"; clarity alone won Fletch its first hundred customers.
 26. **A strategy the team would not put in the hero will not be brought to life.** The hero test is the commitment test.
-27. **Do not claim the outcome unless you guarantee it.** An outcome claim differentiates only when it is a guarantee; otherwise it is a promise every competitor also makes.
+27. **Claim an outcome only when it is guaranteed.** An outcome claim differentiates only when it is a guarantee; otherwise it is a promise every competitor also makes.
