@@ -3,12 +3,12 @@
 set -e
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 TARGETS=""
-for dir in "$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.cursor/skills" "$HOME/.grok/skills" "$HOME/.gemini/skills" "$HOME/.config/opencode/skills"; do
+for dir in "$HOME/.claude/skills" "$HOME/.claude-personal/skills" "$HOME/.claude-smallstep/skills" "$HOME/.codex/skills" "$HOME/.cursor/skills" "$HOME/.grok/skills" "$HOME/.gemini/skills" "$HOME/.config/opencode/skills"; do
   [ -d "$(dirname "$dir")" ] || continue
   mkdir -p "$dir"
   TARGETS="$TARGETS $dir"
 done
-[ -n "$TARGETS" ] || { echo "No agent directories found (~/.claude, ~/.codex, ~/.cursor, ~/.grok, ~/.gemini, ~/.config/opencode)."; exit 1; }
+[ -n "$TARGETS" ] || { echo "No agent directories found (~/.claude, ~/.claude-personal, ~/.claude-smallstep, ~/.codex, ~/.cursor, ~/.grok, ~/.gemini, ~/.config/opencode)."; exit 1; }
 install_one() {
   name="$(basename "$1")"
   for target in $TARGETS; do
