@@ -10,7 +10,7 @@ Every rule here was paid for once. Where a rule looks strict, the strictness is 
 - **Reference** sections (manifest schemas, trap catalog, skill template) sit at the end; the steps point at them when a branch needs them.
 - Terms in *italics* on first use are **leading words**: compact concepts the whole document reuses. Learn them once.
 
-The leading words: *kit-first*, *manifest*, *parity*, *guard*, *one-per-PR*, *pre-flight*, *hand-off list*, *budget*, *tier*, *vocabulary*, *drift test*, *living spec*.
+The leading words: *kit-first*, *manifest*, *parity*, *guard*, *one-per-PR*, *pre-flight*, *hand-off list*, *budget*, *tier*, *vocabulary*, *drift test*, *living spec*, *surface*, *second consumer*.
 
 ---
 
@@ -531,6 +531,44 @@ The other half is upstream of components: how intent reaches the builder. Handof
 Evaluation splits: agents check conformance to the system deterministically (the guards, the rubric); humans handle meaning (usability, consequent decisions), with findings landing back in the spec. Design's irreplaceable value in this loop is judgement applied to accumulated knowledge, which is exactly what the knowledge base makes retrievable.
 
 Start small: one knowledge base, one spec for the next feature, inside the repository so engineers and agents read it directly.
+
+---
+
+## 9. Phase 6: steward, when the system outlives the migration
+
+Every phase before this one assumed one team building against one kit. That assumption expires the moment `1.0.0` publishes: the system is now a dependency other teams have opinions about, and the failure mode changes shape. Migration failures are visible (a component does not match the kit). Stewardship failures are quiet: a fork nobody announced, a request backlog nobody is servicing, a deprecation warning everyone has learned to scroll past.
+
+### 9.1 The model is a measurement, not a choice
+
+Ownership models get chosen aspirationally ("we want to be federated") and then contradicted by what actually merges. Count instead: teams outside the owners that merged into the namespace in the last 90 days. Zero is centralized, one or two is hybrid, three or more is federated whether or not anyone wrote it down.
+
+The count has one override. With no named person whose job includes the system, the model is centralized regardless, because contributions need a reviewer who is accountable for them. Without one, contributions become the contributing team's fork, and a fork is always discovered later than it started.
+
+Recount quarterly. A model that has drifted from its count shows the same symptom in both directions: work queued against people who are not servicing it.
+
+The `governance` block ships empty from foundations and stays empty through the migration, because a model written before anyone has contributed is a guess about teams that do not exist yet. `model` going non-empty is what marks the system as live.
+
+### 9.2 Semver needs a surface before it means anything
+
+A version number describes a surface. Undefined, every release argument becomes a taste argument. This package's surface is three things and nothing else: the namespace's exports, the props on them including types, and the token names in `theme.css`. File layout, slot structure, class strings and which primitive a component wraps are internal, and a consumer reaching past the surface has accepted that.
+
+The bump that gets argued every time is a visual change touching no API. It ships `minor`, never `patch`. Both turn a consumer's snapshot tests red; the difference is whether they were told before it happened, and patch releases are the ones teams auto-merge.
+
+### 9.3 Deprecation is a manifest state, not a comment
+
+The legacy map already proved the shape: a retiring export carries its status, its replacement, and a recipe, and a guard refuses the incomplete version. Post-1.0 deprecations reuse it exactly. A `deprecated` parity manifest names `supersededBy` and `removeIn`, and `ds-manifest.mjs check` fails without both.
+
+The reason is the same one that put the legacy map under a guard. A deprecation with no replacement and no removal date is a permanent warning, consumers learn to ignore permanent warnings, and the ignored warning is then evidence that deprecation does not work here.
+
+While deprecated, the component stays exported, tested and storied. Removal lands in the major named by `removeIn`, announced `noticeMajor` ahead.
+
+### 9.4 Contributions gate on the guards that already exist
+
+Nothing new to remember: `ds-manifest.mjs check`, the guard test, a kit page at the ready marker per rule 1, and a filled usage doc. A contribution with no kit page is a request, and saying so early costs less than saying it at review.
+
+One rule applies only to contributions: a contributed component needs a **second consumer** before the owners absorb it. One caller means it belongs to that caller, and absorbing it makes the owners maintain a private component indefinitely, which they discover the first time they try to change it. Until a second consumer exists it stays in the contributing team's code and the manifest carries it as `code-only` with the reason in `note`.
+
+**Phase 6 done when:** `ds.config.json` carries `governance`, `CONTRIBUTING.md` states the surface, the bump table and the gates, the deprecation guard has been seen red and green, and the RFC addendum records the model with the count behind it.
 
 ---
 

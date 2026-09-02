@@ -10,7 +10,7 @@ import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 
 import { join, basename, resolve, dirname } from 'node:path';
 
 export const PARITY_STATUSES = [
-  'parity', 'gap-code', 'gap-kit', 'code-only', 'decision-needed', 'kit-ready', 'kit-wip',
+  'parity', 'gap-code', 'gap-kit', 'code-only', 'decision-needed', 'kit-ready', 'kit-wip', 'deprecated',
 ];
 export const LEGACY_STATUSES = ['replaced', 'absorbed', 'deprecated', 'kept', 'undecided'];
 
@@ -95,6 +95,14 @@ export const validate = (config, { parity, legacy }, root = process.cwd()) => {
       if (!existsSync(usage)) errors.push(`parity/${key}: status parity but usage doc ${key}.md is missing (run \`ds-manifest.mjs usage ${key}\`)`);
       else if (PLACEHOLDER.test(readFileSync(usage, 'utf8'))) errors.push(`parity/${key}: usage doc still carries a <fill> placeholder`);
     }
+    // A deprecation with no replacement and no removal version is a permanent
+    // warning, and consumers learn to ignore permanent warnings.
+    if (m.status === 'deprecated') {
+      const superseded = m.supersededBy ?? [];
+      if (superseded.length === 0) errors.push(`parity/${key}: status deprecated without supersededBy`);
+      for (const ref of superseded) if (!parity[ref]) errors.push(`parity/${key}: supersededBy references unknown module "${ref}"`);
+      if (!m.removeIn) errors.push(`parity/${key}: status deprecated without removeIn (the major that removes it)`);
+    }
     if (config.codeConnect && m.status === 'parity' && m.design?.tool === 'figma' && m.design?.componentSetId) {
       const mapping = resolve(root, config.namespace, `${key}.figma.tsx`);
       if (!existsSync(mapping)) errors.push(`parity/${key}: status parity but ${key}.figma.tsx is missing`);
@@ -129,6 +137,10 @@ export const renderParityDoc = (config, { parity }) => {
     .filter((k) => parity[k].deviation)
     .sort()
     .map((k) => `- ${displayName(k)}: ${parity[k].deviation}`);
+  const deprecated = Object.keys(parity)
+    .filter((k) => parity[k].status === 'deprecated')
+    .sort()
+    .map((k) => `- ${displayName(k)} → ${(parity[k].supersededBy ?? []).map(displayName).join(', ')} (removed in ${parity[k].removeIn})`);
   const m = config.markers;
   return [
     '# Kit ↔ code parity',
@@ -139,6 +151,7 @@ export const renderParityDoc = (config, { parity }) => {
     section(`${m.ready} Kit-ready (the code queue)`, by('kit-ready')),
     section(`${m.wip} Kit-wip (the queue behind the queue)`, by('kit-wip')),
     section('Code-only (deliberate, not a gap)', by('code-only')),
+    `## Deprecated\n\n${deprecated.length ? deprecated.join('\n') : '_none_'}\n`,
     `## Gaps\n\n${gaps.length ? gaps.join('\n') : '_none_'}\n`,
     `## Deviations\n\n${deviations.length ? deviations.join('\n') : '_none_'}\n`,
   ].join('\n');

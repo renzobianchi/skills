@@ -38,6 +38,14 @@ jobs:
           if node scripts/ds-manifest.mjs check; then echo "guard did not fail on a placeholder"; exit 1; fi
           cp "$OLDPWD/core/templates/usage/button.md" src/next/usage/button.md
           node scripts/ds-manifest.mjs check
+          # deprecation guard, seen red twice and green once
+          printf '{"design":{"tool":"figma","componentSet":"OldField"},"status":"deprecated","axes":{}}' > src/next/parity/old-field.json
+          if node scripts/ds-manifest.mjs check; then echo "guard did not fail on a deprecation with no replacement"; exit 1; fi
+          printf '{"design":{"tool":"figma","componentSet":"OldField"},"status":"deprecated","supersededBy":["button"],"axes":{}}' > src/next/parity/old-field.json
+          if node scripts/ds-manifest.mjs check; then echo "guard did not fail on a deprecation with no removeIn"; exit 1; fi
+          printf '{"design":{"tool":"figma","componentSet":"OldField"},"status":"deprecated","supersededBy":["button"],"removeIn":"2.0.0","axes":{}}' > src/next/parity/old-field.json
+          node scripts/ds-manifest.mjs docs
+          node scripts/ds-manifest.mjs check
           npm init -y >/dev/null
           npm i -D vitest >/dev/null
           npx vitest run --globals

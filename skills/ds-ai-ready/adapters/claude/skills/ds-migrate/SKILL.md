@@ -1,8 +1,8 @@
 ---
 name: ds-migrate
-description: "Run one phase of a design-system migration to shadcn (AI-ready): triage, foundations, kit, parity, component <key>, cleanup."
+description: "Run one phase of a design-system migration to shadcn (AI-ready): triage, foundations, kit, parity, component <key>, cleanup, steward."
 disable-model-invocation: true
-argument-hint: "<triage|foundations|kit|parity|component <key>|cleanup>"
+argument-hint: "<triage|foundations|kit|parity|component <key>|cleanup|steward>"
 ---
 
 Phase router. Read `ds.config.json` at the repo root (if absent, the only valid phase is `foundations`, which writes it). Then read exactly one phase file for `$ARGUMENTS` from this skill's `references/` folder with the Read tool and execute it end to end, stopping at every "Done when" to verify before continuing. The folder lives with the skill, outside the repo; if the Read asks for permission, grant it for the session.
@@ -13,6 +13,7 @@ Phase router. Read `ds.config.json` at the repo root (if absent, the only valid 
 - `parity` → `references/phases/parity.md`
 - `component <key>` → `references/phases/component.md`, with the `ds-rules` skill loaded
 - `cleanup` → `references/phases/cleanup.md`
+- `steward` → `references/phases/steward.md` (after `cleanup` and `ds-patterns`; the system is live and others contribute)
 
 Phase files name `templates/...`; those live at `references/templates/...`. Background for any phase, read only when a step points at it: `references/PLAYBOOK.md`.
 

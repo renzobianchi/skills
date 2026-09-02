@@ -21,6 +21,12 @@
     "legacyDoc": "LEGACY-MAP.md",
     "commitDocs": true
   },
+  "governance": {
+    "model": "",
+    "owners": [],
+    "contribution": "",
+    "noticeMajor": ""
+  },
   "commitSubjectPrefix": "/next",
   "markers": { "wip": "🟡", "ready": "🟢", "done": "🔄" }
 }

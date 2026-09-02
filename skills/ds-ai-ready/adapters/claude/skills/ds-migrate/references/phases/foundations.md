@@ -13,6 +13,7 @@ Copy `templates/ds.config.json` to the repo root and fill it. Every later phase 
 - `tracker`: `linear` or `none`. With `linear`, set `trackerProject`.
 - `primitives`: `base-ui` or `radix`. Pick what shadcn currently defaults to; never mix.
 - `manifests.commitDocs`: whether generated `PARITY.md`/`LEGACY-MAP.md` are committed (guarded for equality) or only rendered.
+- `governance` ships empty and stays empty until the migration is over. `phases/steward.md` fills it from a count, and a model guessed at foundations is a claim about teams that have not contributed yet.
 - Unknown values (`design.figmaFileKey`, `design.kitName`, `reviewers`) stay empty, never invented. Nothing validates them, but rule 1 cannot be honoured until the kit fields are filled, so say so in the hand-off (step 6).
 - From zero: keep `legacyPath` as a declaration even if the directory never exists; triage and cleanup read the key, and an absent key is a different claim from an empty one.
 
