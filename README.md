@@ -28,6 +28,30 @@ Standalone interactive HTML artifacts as the medium for agent↔designer convers
 npx skills add renzobianchi/skills --skill html
 ```
 
+### [startup-positioning](skills/startup-positioning)
+
+Guided positioning interview for a B2B product you do not own: readiness gate, headline audit, four interview rounds, candidate strategies with thesis and risks, one positioning doc at three lengths. Method distilled from Fletch PMM.
+
+```sh
+npx skills add renzobianchi/skills --skill startup-positioning
+```
+
+### [homepage-messaging](skills/homepage-messaging)
+
+From a positioning doc to a homepage: value propositions on the Messaging House, section outline, hero choice, element counts; `audit` mode grades a live page by element and names the broken layer. Hands the words to `language-market-fit`.
+
+```sh
+npx skills add renzobianchi/skills --skill homepage-messaging
+```
+
+### [gtm-readiness](skills/gtm-readiness)
+
+Go-to-market audit: four pillars of fit with numbers, GTM phase, segment check, thirty mistakes with their corrections, one next move.
+
+```sh
+npx skills add renzobianchi/skills --skill gtm-readiness
+```
+
 ## Install all
 
 ```sh
