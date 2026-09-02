@@ -8,7 +8,7 @@ allowed-tools: Read, Write, WebFetch, AskUserQuestion, Bash(curl *)
 
 # Startup positioning
 
-You run a positioning sprint for someone else's product, the way Fletch PMM runs theirs: interview, not lecture. The founder holds every fact; you hold the method. The deliverable is a **positioning doc** a homepage can be written from, and it is only done when the founder would put its one-sentence version in their hero.
+You run a positioning sprint for someone else's product the way Fletch PMM runs theirs. You interview. The founder holds every fact and you hold the method. The deliverable is a **positioning doc** a homepage can be written from, and it is only done when the founder would put its one-sentence version in their hero.
 
 Vocabulary you use throughout (definitions in [references/elements.md](references/elements.md)): **target customer** (company type, champion), **use case** (an activity you could build an onboarding flow for), **competitive alternative** (how they do it today: a product or a manual process), **problem** (the struggling moment, pointable on a calendar), **product category** (the shelf), **capability** (what the product lets them do), **feature** (what makes the capability possible), **benefit** (the state change).
 
@@ -78,7 +78,7 @@ Run every candidate through [references/rules.md](references/rules.md) before sh
 
 ## 4. Pick
 
-Lay the candidates side by side. Ask the founder which hero they would put on the homepage tomorrow; a strategy the team would not put in the hero will not be brought to life. Disagreement between their pick and the strongest thesis is a conversation, not a veto: state the tradeoff in market terms (reach vs clarity, existing energy vs evangelizing) and let them decide.
+Lay the candidates side by side. Ask the founder which hero they would put on the homepage tomorrow; a strategy the team would not put in the hero will not be brought to life. When their pick differs from the strongest thesis, state the tradeoff in market terms (reach against clarity, existing energy against evangelizing) and let them decide.
 
 Closed when one candidate is named with the rule rows and interview facts that decided it.
 
@@ -96,14 +96,16 @@ Write `positioning-<slug>.md` in the working directory:
 
 Closed when the founder confirms the one-sentence version is what they would say on a call.
 
-## Gotchas
+## Guardrails
 
-- **Do not let the founder answer "why" when you asked "what."** "Why do people use it" yields outcomes; "what do they do with it" yields the use case. Re-ask with the activity frame.
-- **Do not accept a category the founder wants to own.** Buyers shop the shelf they know. If the category is new, anchor on the use case and say the category will form on its own.
-- **Do not average two good candidates into one.** A blended anchor says one thing about everything. Pick one, note the other as a future segment.
-- **Do not propose outcomes as the lead in a competitive category.** Every vendor claims the outcome; the founder now competes with "hire two more reps." Lead with the clearest anchor, usually the capability.
-- **Do not skip the readiness gate to be helpful.** A founder who will not choose a segment gets a doc that decorates the old homepage.
-- **Do not write the doc from inference and present it as the interview.** Mark every element the founder did not say as inferred.
+Each is the move that keeps the sprint honest, with the failure it prevents.
+
+- **Ask "what do people do with it" and re-ask with the activity frame whenever the answer is a why.** "Why" yields outcomes; only the activity is a use case.
+- **Anchor on the category the buyer already shops, and when the category is new, on the use case.** A category the founder wants to own is a shelf nobody visits yet; say the category will form on its own.
+- **Keep the candidates separate through the pick, and note the runner-up as a future segment.** A blend of two anchors says one thing about everything.
+- **Lead with the clearest anchor, usually the capability, in any competitive category.** Every vendor claims the outcome, and an outcome lead puts the founder in competition with "hire two more reps."
+- **Run the readiness gate before the first interview question, every time.** A founder who will not choose a segment gets a doc that decorates the old homepage.
+- **Mark every element the founder did not say as inferred.** The doc's authority comes from being the interview, and an inferred line presented as founder-stated is the one they will build on.
 
 ## Credits
 

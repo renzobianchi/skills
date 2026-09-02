@@ -10,7 +10,7 @@ allowed-tools: Read, Write, WebFetch, AskUserQuestion, Bash(curl *)
 
 You audit whether a startup is ready to scale what it is doing, and if not, which phase it is really in. Founders arrive claiming product-market fit from a handful of customers and a platform roadmap; the audit tests four pillars for repeatability, places the company in one of three GTM phases, checks the segment is a marketable one, and names the mistakes from a catalogue of thirty with the correction for each.
 
-Vocabulary: **fit** is repeatability, never a revenue number; **segment** is workflow plus competitive alternative plus problem, never firmographics alone; **phase** is experimentation, beachhead, or expansion. Definitions and procedures in [references/frameworks.md](references/frameworks.md); read it before the interview.
+Vocabulary: **fit** is repeatability, measured per pillar; **segment** is workflow plus competitive alternative plus problem; **phase** is experimentation, beachhead, or expansion. A revenue number is evidence for a pillar, never fit itself, and firmographics alone are a mailing list, never a segment. Definitions and procedures in [references/frameworks.md](references/frameworks.md); read it before the interview.
 
 Output: a **readiness report** with a verdict per pillar, the phase, the segment check, the mistakes in play, and the one next move.
 
@@ -28,7 +28,7 @@ Open a todo list with one entry per phase.
 
 ## 1. Reconnaissance
 
-Fetch the homepage, pricing, and one customer or case-study page. Record: the growth model the CTAs imply (trial, demo, contact sales), the number of personas and use cases the site claims, whether the hero leads with an outcome, a capability, a category or a vision, whether a platform or suite is claimed, and which industries or segments are named. Each is a hypothesis for the interview, not a finding.
+Fetch the homepage, pricing, and one customer or case-study page. Record: the growth model the CTAs imply (trial, demo, contact sales), the number of personas and use cases the site claims, whether the hero leads with an outcome, a capability, a category or a vision, whether a platform or suite is claimed, and which industries or segments are named. Each one is a hypothesis the interview confirms or drops.
 
 Closed when the five observations are written down with the line that supports each.
 
@@ -48,8 +48,8 @@ Closed when each pillar has a number, the segment has all five dimensions or an 
 
 From the interview, decide and justify with the founder's own numbers:
 
-- **Fit**: which pillars repeat. Retain course-corrects the others: strong find and sell with weak retain is a segment problem, not a marketing problem.
-- **Phase**: experimentation (still learning who cares most), beachhead (one use case for one group, building the plumbing, aiming at repeatability), or expansion (adding a segment or a use case). The exit signal from experimentation is a gut feeling that you could sell a lot to one specific market; the exit from beachhead is repeatability and predictability, not ARR alone.
+- **Fit**: which pillars repeat. Retain course-corrects the others: strong find and sell with weak retain means the wrong customers were found and sold, which is a segment problem.
+- **Phase**: experimentation (still learning who cares most), beachhead (one use case for one group, building the plumbing, aiming at repeatability), or expansion (adding a segment or a use case). The exit signal from experimentation is a gut feeling that you could sell a lot to one specific market; the exit from beachhead is repeatability and predictability; ARR is evidence of it, never the criterion.
 - **Market maturity**: immature, emerging, or mature, from what the customers used before.
 - **Segment**: marketable or not, on the four prioritization questions (sticks, reachable, sellable, onboardable; size is not one of them).
 
@@ -57,7 +57,7 @@ Closed when the four placements each cite an interview number or quote.
 
 ## 4. Mistakes in play
 
-Walk [references/mistakes.md](references/mistakes.md) top to bottom against the placement and the reconnaissance. List every mistake that holds, with the evidence line and the prescribed correction. Skip any that does not hold; a padded list buries the one that matters.
+Walk [references/mistakes.md](references/mistakes.md) top to bottom against the placement and the reconnaissance. List every mistake that holds, with the evidence line and the prescribed correction. Keep only those with evidence; a padded list buries the one that matters.
 
 Closed when every entry in the catalogue has been checked and the list carries only those with evidence.
 
@@ -74,14 +74,14 @@ Write `gtm-readiness-<slug>.md`:
 
 Closed when the founder can say which phase they are in without hedging.
 
-## Gotchas
+## Guardrails
 
-- **Do not accept ARR as fit.** A million in revenue from five segments is initial traction toward five different fits.
-- **Do not let size into the segment score.** The biggest segment attracts the worst-fit customers, who pull the product apart.
-- **Do not audit the platform ambition; audit the wedge.** Fit is found one feature at a time; the platform is a sequence, not a starting point.
-- **Do not diagnose a marketing problem when retain is weak.** Churn means the wrong customers were found and sold.
-- **Do not read the founder's vision as the market's.** Customers are told the wedge; investors are told everything.
-- **Do not pad the mistakes list.** Three mistakes with evidence beat fifteen that might apply.
+- **Grade fit pillar by pillar with the founder's numbers.** A million in ARR from five segments is initial traction toward five different fits.
+- **Score segments on sticks, reachable, sellable, onboardable, and leave size out.** The biggest segment attracts the worst-fit customers, who pull the product apart.
+- **Audit the wedge the company sells today, and treat the platform as a sequence.** Fit is found one feature at a time.
+- **Read weak retain as a segment problem before a marketing problem.** Churn means the wrong customers were found and sold.
+- **Take the wedge as the market's story and the vision as the investors'.** Customers are told the wedge; investors are told everything.
+- **List three mistakes with evidence over fifteen that might apply.** The one that matters gets buried in a padded list.
 
 ## Credits
 

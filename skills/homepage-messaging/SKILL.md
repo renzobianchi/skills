@@ -12,7 +12,7 @@ You turn positioning into what the homepage says, in what order. Most copywritin
 
 Vocabulary: the messaging elements in [references/elements.md](references/elements.md). Every headline you write or grade is tagged with one.
 
-Output of `build` is a **messaging doc**: the Messaging House, the section outline with the element each section leads with, the hero, and a hand-off to `language-market-fit`, which owns the words. This skill owns which element goes where; that skill owns whether the words are the prospect's.
+Output of `build` is a **messaging doc**: the Messaging House, the section outline with the element each section leads with, the hero, and a hand-off to `language-market-fit`, which owns the words. This skill decides which element goes where. That skill decides whether the words are the prospect's.
 
 ## Mode
 
@@ -39,7 +39,7 @@ Closed when the Messaging House has its top (the positioning doc's one sentence,
 
 Start from the **World's Clearest Homepage Template** and adapt by category maturity and growth model, per the section table in the frameworks reference: hero → problem → solution intro → three value-prop sections at the feature-set level → proof → CTA. Then decide the post-hero section type: How It Works for a new category (capability plus feature), Use Cases for a horizontal product, Features only in a very mature category, Results last and only if forced.
 
-Multi-audience or multi-product: pick one persona for the first one to three scrolls and prioritize (never itemize every product in the hero, never summarize them into an abstraction). Vision and roadmap go on their own page.
+Multi-audience or multi-product: pick one persona for the first one to three scrolls and prioritize one product; the others get their own pages. Itemizing every product in the hero or summarizing them into an abstraction are the two ways the hero stops saying anything. Vision and roadmap go on their own page.
 
 Closed when every section has the element it leads with, the value prop it carries, and a one-line purpose; and the element counts on the page are within range (personas 1 to 2, problems 1 to 3, category exactly 1, capabilities 1 to 3, features 1 to 5, benefits 1 to 3).
 
@@ -47,7 +47,7 @@ Closed when every section has the element it leads with, the value prop it carri
 
 The hero is the only line guaranteed to be read. It answers what is it, who is it for, what does it let me do; or, in the two-question test, "which of my tools does this replace" or "which task in my job does this help with." Choose the template from the frameworks reference (X for Y, category differentiator, how-to, networker) by market maturity and by which element the positioning doc leads with; then write headline, subhead, and the product visual that goes beside it (real UI, never an illustration).
 
-Run the hero and every section headline through [references/rules.md](references/rules.md). A line that fails a rule is rewritten; a line that keeps failing has an abstract claim underneath, so fix the claim in the messaging doc, not the wording.
+Run the hero and every section headline through [references/rules.md](references/rules.md). Rewrite any line that fails a rule. A line that keeps failing has an abstract claim underneath it; fix the claim in the messaging doc and the wording follows.
 
 Closed when a stranger reading only the hero can say what the product does and who it is for.
 
@@ -67,14 +67,14 @@ Fetch the page. **Headline audit**: list every headline in order, tag each with 
 
 Lead with the biggest problem. End with the one change that would move the most, and which skill does it.
 
-## Gotchas
+## Guardrails
 
-- **Do not write copy here.** You place elements; `language-market-fit` chooses words. A hero written in this skill skips the voice gate.
-- **Do not lead with a benefit because it sounds bigger.** Lead with the capability, close with the benefit. The reader has to see what it does before believing what it changes.
-- **Do not let a three-word tagline stand in for the hero.** It obscures the product; stack elements until the two questions are answered, then stop before the reader bounces.
-- **Do not put results or ROI above the fold.** First-order benefits only on owned channels; a fourth-order outcome reads as any vendor's promise.
-- **Do not brand feature names.** A feature is a plain phrase the reader can picture.
-- **Do not build a channel-changer page for a multi-persona product.** Pick one persona for the first scrolls; the others get persona pages.
+- **Place elements here and send every line to `language-market-fit` for the words.** A hero written in this skill skips the voice gate.
+- **Lead with the capability and close with the benefit.** The reader sees what it does before believing what it changes; a benefit lead sounds bigger and reads as any vendor's promise.
+- **Stack elements until the two hero questions are answered, then stop.** A three-word tagline obscures the product; a paragraph makes the reader bounce.
+- **Keep results and ROI below the fold, and keep benefits first-order.** A fourth-order outcome is a promise every competitor also makes.
+- **Name features in plain words.** A branded feature is a word the reader has to learn before it means anything.
+- **Give a multi-persona product one persona for the first scrolls and a page per persona after.** A channel-changer hero speaks to nobody.
 
 ## Credits
 
