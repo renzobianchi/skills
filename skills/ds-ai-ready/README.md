@@ -8,7 +8,7 @@ Migrate an existing design system to shadcn, or start one from zero, so that age
 core/
   rules.md              rules the agent applies on every component (model-invoked)
   traps.md              silent failures that masquerade as component bugs
-  phases/               one file per phase: triage, foundations, kit, parity, component, cleanup, patterns
+  phases/               one file per phase: triage, foundations, kit, parity, component, cleanup, patterns, steward
   templates/            ds.config.json, per-component manifests and usage docs, ds-manifest.mjs, guard tests,
                         the project's own skill, RFC addendum
 .claude-plugin/         plugin.json and marketplace.json (install as a Claude Code plugin)
@@ -45,6 +45,7 @@ At any point, `/ds-ai-ready:ds-help` says which of these steps you are on and wh
 3. Design owner runs `phases/kit.md`; each finished page flips to 🟢 and gets its manifest file as `kit-ready`.
 4. `/ds-migrate component <key>` per component: one branch, one PR, self-review before a human reviewer, squash merge, wait for green publish.
 5. `/ds-migrate cleanup`, then `/ds-patterns`.
+6. `/ds-migrate steward` once the system is live and other teams contribute: ownership model from a count, the public surface semver describes, deprecation under the same guard the legacy map used, and the contribution gate.
 
 ## One manifest per component
 
@@ -64,6 +65,7 @@ Beside the manifest, `usage/<key>.md` tells an agent when to use the component, 
 | `primitives` | `base-ui` / `radix` | which state selectors are alive |
 | `manifests.commitDocs` | bool | generated docs committed and guarded, or only rendered |
 | `markers` | emoji | kit page lifecycle, default 🟡 → 🟢 → 🔄 |
+| `governance` | model / owners / contribution / noticeMajor | empty until `steward`; `model` filled marks the system as live |
 
 ## Credits and sources
 

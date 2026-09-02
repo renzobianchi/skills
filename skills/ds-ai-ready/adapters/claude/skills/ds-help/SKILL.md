@@ -19,7 +19,8 @@ Evaluate every row top to bottom; the current phase is the **last** row whose si
 | `TRIAGE.md` and `manifests.legacy/*.json` exist (skip when `legacyPath` is empty or absent) | triage done | kit alignment |
 | at least one `manifests.parity/*.json` at `kit-ready` | kit producing | `/ds-ai-ready:ds-migrate component <key>` on the first `kit-ready` by dependency order |
 | every `manifests.parity/*.json` at `parity` or `code-only`, no `kit-ready`/`kit-wip`/`gap-*` | component queue drained | `/ds-ai-ready:ds-migrate cleanup` |
-| `legacyPath` gone and every legacy manifest `replaced`/`absorbed`/`deprecated` | cleanup done | `/ds-ai-ready:ds-patterns inventory` |
+| `legacyPath` gone and every legacy manifest `replaced`/`absorbed`/`deprecated` | cleanup done | `/ds-ai-ready:ds-patterns inventory`, then `/ds-ai-ready:ds-migrate steward` |
+| `governance.model` non-empty in `ds.config.json` | steward done, the system is live | rerun the count in `phases/steward.md` step 1 every quarter |
 
 A component in progress: a branch named `<prefix>-<key>` or a manifest whose `note` mentions an open PR. Report it as "in flight" with the step of `phases/component.md` it appears to be at, judged by what exists (branch, stories, manifest at `parity`, PR open, reviewers assigned).
 
@@ -32,6 +33,7 @@ Check each; list only the ones that hold:
 - A `parity` component without `manifests.usage/<key>.md`: `node scripts/ds-manifest.mjs usage <key>`, then fill it.
 - `kit-ready` manifests whose composed parts are not yet `parity`: name the part.
 - `FINDINGS.md` present: count the entries marked **Open** and name the oldest.
+- A `deprecated` parity manifest without `supersededBy` or `removeIn`: the guard names it; `phases/steward.md` step 4 has the fix.
 
 ## 3. Report
 
@@ -40,7 +42,7 @@ Print, in this order, nothing else:
 1. **Phase**: the row from step 1, one line, plus the in-flight component if any.
 2. **Blocked by**: the list from step 2, or "nothing".
 3. **Next**: the single command or hand-off from the table, with the key filled in.
-4. **Skills**: `ds-migrate <phase>` (runs one phase end to end), `ds-patterns <step>` (after cleanup), `ds-rules` (fires on its own under the namespace; ask it to state rule 1 to confirm it loaded), `ds-help` (this).
+4. **Skills**: `ds-migrate <phase>` (runs one phase end to end, `steward` last), `ds-patterns <step>` (after cleanup), `ds-rules` (fires on its own under the namespace; ask it to state rule 1 to confirm it loaded), `ds-help` (this).
 5. **Read next**: the absolute path of the one phase file for the next command, resolved from this skill's folder: `../ds-migrate/references/phases/<phase>.md` (`kit.md` for a design hand-off), or `../ds-patterns/references/patterns.md` after cleanup.
 
 Done when every line above is backed by a file or command output you read this turn.
