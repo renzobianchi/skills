@@ -9,6 +9,14 @@ A guided positioning interview for a B2B product you do not own. Run it with a f
 
 Pairs with `homepage-messaging` (structure and hero from the doc) and `language-market-fit` (copy in the prospect's words).
 
+## Install
+
+```sh
+npx skills add renzobianchi/skills --skill startup-positioning
+```
+
+Works with Claude Code, Cursor, Codex, opencode, and any agent that supports the [skills](https://skills.sh) format. Without npm: `git clone https://github.com/renzobianchi/skills && sh skills/install.sh` installs every skill in the pack, or copy `skills/startup-positioning` into `~/.claude/skills/`.
+
 ## Credits
 
 Distilled from the public posts of Fletch PMM (Anthony Pierri, Robert Kaminski, Sara Santanen): Minimum Viable Positioning, positioning anchors, market-maturity stages, the ICP scorecard, the JTBD positioning map, the Positioning Strategy Visualizer. Framework names are theirs; `references/sources.md` links each part to its post. No post text is reproduced.

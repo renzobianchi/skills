@@ -9,6 +9,14 @@ Turns a positioning doc into what the homepage says and in what order: three val
 
 Runs after `startup-positioning`; refuses to write a hero without its doc.
 
+## Install
+
+```sh
+npx skills add renzobianchi/skills --skill homepage-messaging
+```
+
+Works with Claude Code, Cursor, Codex, opencode, and any agent that supports the [skills](https://skills.sh) format. Without npm: `git clone https://github.com/renzobianchi/skills && sh skills/install.sh` installs every skill in the pack, or copy `skills/homepage-messaging` into `~/.claude/skills/`.
+
 ## Credits
 
 Distilled from the public posts of Fletch PMM (Anthony Pierri, Robert Kaminski): the messaging elements, the Value Proposition Canvas, the Messaging House, the World's Clearest Homepage Template, the hero templates and the homepage evaluation counts. Framework names are theirs; `references/sources.md` links each part to its post. No post text is reproduced.
