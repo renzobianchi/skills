@@ -102,6 +102,8 @@ Rerun step 1's count every quarter. The model is wrong the moment the count move
 
 Changing the model is an RFC addendum, not a quiet edit to `ds.config.json`.
 
-**Done when:** the count and its date are in the RFC addendum, and the next review is on someone's calendar.
+Parity too: run the re-audit sweep (`cleanup.md` → §0) against the kit's current version in the same quarter. Between sweeps, a kit edit after `1.0.0` is a `minor` at least (§3) and lands with the re-verified manifest in the same PR; a kit component that moves ahead of its code PR leaves that manifest at `gap-code` until the PR lands.
+
+**Done when:** the count and its date are in the RFC addendum, the quarter's sweep left `check --kit-version <current>` printing `ok`, and the next review is on someone's calendar.
 
 **Phase done when:** `ds.config.json` carries `governance`, `CONTRIBUTING.md` exists with the surface, the bump table and the gates, the deprecation guard has been exercised red and green, and the RFC has the addendum with the model and the count behind it.

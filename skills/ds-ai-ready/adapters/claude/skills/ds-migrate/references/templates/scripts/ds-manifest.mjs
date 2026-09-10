@@ -5,6 +5,9 @@
 //   node scripts/ds-manifest.mjs check   # validate manifests (+ docs equality when commitDocs, + shipping config)
 //   node scripts/ds-manifest.mjs usage <key>   # scaffold the component's usage doc from its manifest
 //   node scripts/ds-manifest.mjs ship    # copy docs + merged manifests into manifests.ship, write llms.txt
+//   node scripts/ds-manifest.mjs verify <key> <kitVersion>   # stamp a parity manifest: level, date, kit version
+//   node scripts/ds-manifest.mjs audit code   # compare axes.code with the cva variants in the component source
+//   check --kit-version <v>  (or DS_KIT_VERSION)  # also fail every parity manifest verified against another kit version
 // Exports the same functions for the test runner.
 
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, rmSync, copyFileSync } from 'node:fs';
@@ -14,6 +17,9 @@ export const PARITY_STATUSES = [
   'parity', 'gap-code', 'gap-kit', 'code-only', 'decision-needed', 'kit-ready', 'kit-wip', 'deprecated',
 ];
 export const LEGACY_STATUSES = ['replaced', 'absorbed', 'deprecated', 'kept', 'undecided'];
+// What `status: parity` proves, lowest to highest. `verified.level` must reach config.parityLevel.
+export const PARITY_LEVELS = ['axis', 'visual', 'rubric'];
+export const parityLevel = (config) => config.parityLevel ?? 'visual';
 
 export const loadConfig = (root = process.cwd()) =>
   JSON.parse(readFileSync(join(root, 'ds.config.json'), 'utf8'));
@@ -82,7 +88,23 @@ export const displayName = (key) =>
 
 // ---------- validation ----------
 
-export const validate = (config, { parity, legacy }, root = process.cwd()) => {
+// Axis values compared after normalization (Default/default, icon-sm/IconSm). A value on
+// one side only is drift unless the axis carries a note saying why it is deliberate.
+const norm = (v) => String(v).toLowerCase().replace(/[^a-z0-9]/g, '');
+export const axisDrift = (m) => {
+  const out = {};
+  for (const [axis, a] of Object.entries(m.axes ?? {})) {
+    if (a.note) continue;
+    const kit = (a.figma ?? a.paper ?? a.kit ?? []).map(norm);
+    const code = (a.code ?? []).map(norm);
+    const kitOnly = kit.filter((v) => !code.includes(v));
+    const codeOnly = code.filter((v) => !kit.includes(v));
+    if (kitOnly.length || codeOnly.length) out[axis] = [kitOnly.length ? `kit only: ${kitOnly.join(', ')}` : '', codeOnly.length ? `code only: ${codeOnly.join(', ')}` : ''].filter(Boolean).join('; ');
+  }
+  return out;
+};
+
+export const validate = (config, { parity, legacy }, root = process.cwd(), { kitVersion } = {}) => {
   const errors = [];
   for (const [key, m] of Object.entries(parity)) {
     if (!PARITY_STATUSES.includes(m.status)) errors.push(`parity/${key}: invalid status "${m.status}"`);
@@ -92,6 +114,20 @@ export const validate = (config, { parity, legacy }, root = process.cwd()) => {
       errors.push(`parity/${key}: codeConnect is true but design.tool is paper`);
     }
     if (m.status === 'parity') {
+      // "Done" is a verified mirror, not a claim. A parity entry states what level was
+      // checked, when, and against which kit version; every kit≠code difference is
+      // declared (axis note, composeOnly, asymmetries) or it is drift.
+      const v = m.verified;
+      const required = parityLevel(config);
+      if (!v || !v.level || !v.at || !v.kitVersion) errors.push(`parity/${key}: status parity without verified {level, at, kitVersion} (run \`ds-manifest.mjs verify ${key} <kitVersion>\`)`);
+      else {
+        if (!PARITY_LEVELS.includes(v.level)) errors.push(`parity/${key}: verified.level "${v.level}" is not one of ${PARITY_LEVELS.join('/')}`);
+        else if (PARITY_LEVELS.indexOf(v.level) < PARITY_LEVELS.indexOf(required)) errors.push(`parity/${key}: verified at level ${v.level}, config requires ${required}`);
+        if (kitVersion && v.kitVersion !== kitVersion) errors.push(`parity/${key}: verified against kit ${v.kitVersion}, kit is now ${kitVersion}; re-audit`);
+      }
+      for (const [axis, d] of Object.entries(axisDrift(m))) {
+        errors.push(`parity/${key}: axis "${axis}" is not a mirror (${d}) and carries no note explaining why`);
+      }
       const usage = usagePath(config, key, root);
       if (!existsSync(usage)) errors.push(`parity/${key}: status parity but usage doc ${key}.md is missing (run \`ds-manifest.mjs usage ${key}\`)`);
       else if (PLACEHOLDER.test(readFileSync(usage, 'utf8'))) errors.push(`parity/${key}: usage doc still carries a <fill> placeholder`);
@@ -128,6 +164,16 @@ const section = (title, keys) =>
 
 export const renderParityDoc = (config, { parity }) => {
   const by = (s) => Object.keys(parity).filter((k) => parity[k].status === s).map(displayName).sort((a, b) => a.localeCompare(b));
+  // Parity lines carry the verification: a reader sees at a glance which entries were
+  // checked against an older kit version.
+  const verified = Object.keys(parity)
+    .filter((k) => parity[k].status === 'parity')
+    .sort()
+    .map((k) => { const v = parity[k].verified ?? {}; return `- ${displayName(k)} (${v.level ?? 'unverified'}, ${v.at ?? 'no date'}, kit ${v.kitVersion ?? '?'})`; });
+  const asymmetries = Object.keys(parity)
+    .filter((k) => (parity[k].asymmetries ?? []).length)
+    .sort()
+    .flatMap((k) => parity[k].asymmetries.map((a) => `- ${displayName(k)}: kit ${a.kit} / code ${a.code}: ${a.reason}`));
   const gaps = Object.keys(parity)
     .filter((k) => ['gap-code', 'gap-kit', 'decision-needed'].includes(parity[k].status))
     .sort()
@@ -148,13 +194,14 @@ export const renderParityDoc = (config, { parity }) => {
     '',
     `Generated from \`${config.manifests.parity}/*.json\` by \`scripts/ds-manifest.mjs docs\`. Do not edit; regenerate. When this file and the manifests disagree, the manifests win.`,
     '',
-    section(`${m.done} In parity`, by('parity')),
+    `## ${m.done} In parity\n\n${verified.length ? verified.join('\n') : '_none_'}\n`,
     section(`${m.ready} Kit-ready (the code queue)`, by('kit-ready')),
     section(`${m.wip} Kit-wip (the queue behind the queue)`, by('kit-wip')),
     section('Code-only (deliberate, not a gap)', by('code-only')),
     `## Deprecated\n\n${deprecated.length ? deprecated.join('\n') : '_none_'}\n`,
     `## Gaps\n\n${gaps.length ? gaps.join('\n') : '_none_'}\n`,
     `## Deviations\n\n${deviations.length ? deviations.join('\n') : '_none_'}\n`,
+    `## Deliberate asymmetries (kit ≠ code, on purpose)\n\n${asymmetries.length ? asymmetries.join('\n') : '_none_'}\n`,
   ].join('\n');
 };
 
@@ -215,6 +262,46 @@ export const renderMigrationDoc = (config, { legacy, parity }) => {
     `## Kept\n\n${list(kept)}\n`,
     `## Undecided\n\n${list(undecided)}\n`,
   ].join('\n');
+};
+
+// ---------- code audit ----------
+// Reads the cva() variants out of the component source and compares them with axes.code.
+// Deterministic half of the mirror check: the kit half needs the bridge and is done by the
+// agent in the component and cleanup phases. Best-effort parser: an axis the parser cannot
+// find is reported, never assumed equal.
+export const cvaVariants = (src) => {
+  const out = {};
+  const start = src.indexOf('variants:');
+  if (start < 0) return out;
+  let i = src.indexOf('{', start); let depth = 0; let end = i;
+  for (; end < src.length; end++) { if (src[end] === '{') depth++; else if (src[end] === '}' && --depth === 0) break; }
+  const body = src.slice(i + 1, end);
+  const re = /(\w+)\s*:\s*\{/g; let m;
+  while ((m = re.exec(body))) {
+    let d = 0; let j = m.index + m[0].length - 1; let k = j;
+    for (; k < body.length; k++) { if (body[k] === '{') d++; else if (body[k] === '}' && --d === 0) break; }
+    const inner = body.slice(j + 1, k);
+    out[m[1]] = [...inner.matchAll(/(?:^|[,{\s])["']?([\w-]+)["']?\s*:/g)].map((x) => x[1]);
+    re.lastIndex = k + 1;
+  }
+  return out;
+};
+
+export const auditCode = (config, { parity }, root = process.cwd()) => {
+  const findings = [];
+  for (const [key, m] of Object.entries(parity)) {
+    if (m.status !== 'parity') continue;
+    const file = resolve(root, config.namespace, `${key}.tsx`);
+    if (!existsSync(file)) { findings.push(`parity/${key}: source ${key}.tsx not found under namespace`); continue; }
+    const variants = cvaVariants(readFileSync(file, 'utf8'));
+    for (const [axis, a] of Object.entries(m.axes ?? {})) {
+      if (!variants[axis]) { findings.push(`parity/${key}: axis "${axis}" not found as a cva variant; check by hand`); continue; }
+      const code = (a.code ?? []).map(norm); const cva = variants[axis].map(norm);
+      const missing = cva.filter((v) => !code.includes(v)); const extra = code.filter((v) => !cva.includes(v));
+      if (missing.length || extra.length) findings.push(`parity/${key}: axis "${axis}" manifest ≠ source (${missing.length ? `source only: ${missing.join(', ')}` : ''}${missing.length && extra.length ? '; ' : ''}${extra.length ? `manifest only: ${extra.join(', ')}` : ''})`);
+    }
+  }
+  return findings;
 };
 
 // ---------- commands ----------
@@ -346,6 +433,26 @@ const main = () => {
     console.log(`docs written: ${Object.keys(manifests.parity).length} parity, ${Object.keys(manifests.legacy).length} legacy`);
     return;
   }
+  if (cmd === 'verify') {
+    const [key, kitVersion] = [process.argv[3], process.argv[4]];
+    if (!key || !manifests.parity[key] || !kitVersion) { console.error('usage: ds-manifest.mjs verify <key> <kitVersion>   (kitVersion: the kit file version id you audited against, from the bridge)'); process.exit(2); }
+    const path = resolve(root, config.manifests.parity, `${key}.json`);
+    const m = JSON.parse(readFileSync(path, 'utf8'));
+    if (m.status !== 'parity') { console.error(`${key} is ${m.status}; verify stamps a parity manifest only`); process.exit(1); }
+    const drift = axisDrift(m);
+    if (Object.keys(drift).length) { for (const [a, d] of Object.entries(drift)) console.error(`✗ axis "${a}": ${d}; reconcile or add a note before stamping`); process.exit(1); }
+    m.verified = { level: parityLevel(config), at: new Date().toISOString().slice(0, 10), kitVersion: String(kitVersion) };
+    writeFileSync(path, JSON.stringify(m, null, 2) + '\n');
+    console.log(`verified: ${key} at level ${m.verified.level}, kit ${kitVersion}. Regenerate docs.`);
+    return;
+  }
+  if (cmd === 'audit') {
+    if (process.argv[3] !== 'code') { console.error('usage: ds-manifest.mjs audit code'); process.exit(2); }
+    const findings = auditCode(config, manifests, root);
+    if (findings.length) { findings.forEach((f) => console.error(`✗ ${f}`)); process.exit(1); }
+    console.log(`audit code ok: ${Object.values(manifests.parity).filter((m) => m.status === 'parity').length} parity manifests match their cva variants`);
+    return;
+  }
   if (cmd === 'ship') {
     const shipped = ship(config, manifests, root);
     console.log(`shipped ${shipped.length} files:\n${shipped.map((f) => `  ${f}`).join('\n')}`);
@@ -362,12 +469,14 @@ const main = () => {
     return;
   }
   if (cmd === 'check') {
-    const errors = [...validate(config, manifests, root), ...checkDocs(config, manifests, root), ...checkShip(config, root)];
+    const flag = process.argv.indexOf('--kit-version');
+    const kitVersion = flag > 0 ? process.argv[flag + 1] : process.env.DS_KIT_VERSION;
+    const errors = [...validate(config, manifests, root, { kitVersion }), ...checkDocs(config, manifests, root), ...checkShip(config, root)];
     if (errors.length) { errors.forEach((e) => console.error(`✗ ${e}`)); process.exit(1); }
     console.log(`ok: ${Object.keys(manifests.parity).length} parity, ${Object.keys(manifests.legacy).length} legacy`);
     return;
   }
-  console.error('usage: ds-manifest.mjs <docs|check|ship|usage <key>>');
+  console.error('usage: ds-manifest.mjs <docs|check [--kit-version <v>]|ship|verify <key> <kitVersion>|audit code|usage <key>>');
   process.exit(2);
 };
 

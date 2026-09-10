@@ -37,5 +37,8 @@ Each fails silently and masquerades as a component bug or a design decision. Che
 | `&:is(.dark *)` with the class on a wrapper | wrapper background stays light | `&:where(.dark, .dark *)`, commented so a diff does not revert it |
 | Tailwind auto source detection | a class appears because of where a file sits | `source(none)` plus explicit `@source` per folder |
 | `@base-ui-components/react` | pinned at an rc, deprecation notice | the package is `@base-ui/react` |
-| Package ships `dist/` only | the consumer's agent finds compiled JS and no usage doc, no `MIGRATION.md` | `ds-manifest.mjs ship` on `prepack`; `files` covers the ship folder and `llms.txt`; `npm pack --dry-run` |
-| `MIGRATION.md` written once `undecided` is empty | the canary and the first consumer waves migrate with no recipes, or guess at the undecided ones | generate it from the legacy map from the first `replaced`; undecided renders as "do not migrate yet" |
+| Package ships `dist/` only | the consumer's agent finds compiled JS and no recipes | run `ship` on `prepack`, `files` covering it; prove with `npm pack --dry-run` |
+| `parity` declared on the build day and never revisited | the QA pass at the end finds kit edits after merge and components never at mirror | stamp `verified {level, at, kitVersion}`; run `check --kit-version` before cleanup and quarterly |
+| Axis values copied from the kit once | manifest and code keep an old value set the kit renamed | run `audit code` against the cva; re-read the kit at re-audit |
+| A kit≠code difference that lives in someone's head | the auditor flags it as drift, or worse, "fixes" it | list it in `asymmetries` with the owner's reason |
+| `MIGRATION.md` written once `undecided` is empty | the canary and the first consumer waves migrate with no recipes | generate from the legacy map at the first `replaced`; render undecided as "do not migrate yet" |

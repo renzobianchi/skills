@@ -6,7 +6,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import {
-  loadConfig, loadManifests, validate, checkDocs, checkShip, renderParityDoc, docsPaths,
+  loadConfig, loadManifests, validate, checkDocs, checkShip, auditCode, renderParityDoc, docsPaths,
 } from '../scripts/ds-manifest.mjs';
 
 const root = process.cwd();
@@ -14,8 +14,14 @@ const config = loadConfig(root);
 const manifests = loadManifests(config, root);
 
 describe('parity manifests', () => {
-  it('validate (statuses, references, usage docs, code connect mappings)', () => {
-    expect(validate(config, manifests, root)).toEqual([]);
+  it('validate (statuses, references, verified mirror, axis drift, usage docs, code connect mappings)', () => {
+    // DS_KIT_VERSION set in CI to the kit's current version id makes this fail for
+    // every parity manifest verified against an older kit.
+    expect(validate(config, manifests, root, { kitVersion: process.env.DS_KIT_VERSION })).toEqual([]);
+  });
+
+  it('axes.code matches the cva variants in each parity component source', () => {
+    expect(auditCode(config, manifests, root)).toEqual([]);
   });
 
   it('generated docs match the committed ones', () => {

@@ -11,6 +11,8 @@ Runs once to set up, then continuously through the component loop. Output: per-c
 - `axes`: per variant axis, `code` values vs kit values, plus a `note` when reconciled.
 - `composeOnly`: kit axes that are composition in code.
 - `deviation`: where code departs from upstream and the review that decided it.
+- `asymmetries`: `[{ kit, code, reason }]`, every deliberate kit≠code difference that is not an axis (a label that lives in another component, a state the kit draws and code derives). Rendered into `PARITY.md`; anything different and not listed here is drift.
+- `verified`: `{ level, at, kitVersion }`, written by `ds-manifest.mjs verify <key> <kitVersion>` and required for `status: parity`. `kitVersion` is the kit's version id at audit time (Figma: the file version from the bridge; Paper: the project commit).
 - `note`: the per-component decisions. Read before touching the component.
 
 Why per file: a single shared manifest made every component PR edit the same file, so each merge conflicted every other approved PR, and each resolution was a push that dismissed an approval. One file per component cannot conflict with another component's PR. The only shared file left is the namespace index; keep it one export per line, sorted, so concurrent adds land on different lines.
@@ -20,7 +22,9 @@ Why per file: a single shared manifest made every component PR edit the same fil
 `scripts/ds-manifest.mjs`:
 
 - `docs`: writes `PARITY.md` (sections In parity / Kit-ready / Kit-wip / Gaps, one module per line, sorted, no counts in headings) and `LEGACY-MAP.md` (sections per status, snapshot line derived).
-- `check`: validates every manifest file (schema, statuses, references), and when `commitDocs: true`, that the committed docs equal the generated ones. Nonzero exit names the file.
+- `check`: validates every manifest file (schema, statuses, references, `verified` present and at `parityLevel`, axes mirrored or noted), and when `commitDocs: true`, that the committed docs equal the generated ones. With `--kit-version <v>` (or `DS_KIT_VERSION` in CI) it also fails every `parity` entry verified against another kit version. Nonzero exit names the file.
+- `verify <key> <kitVersion>`: refuses while an axis drifts without a note; otherwise stamps `verified` with the configured level and today's date.
+- `audit code`: compares `axes.code` with the `cva` variants in `<namespace>/<key>.tsx` for every `parity` entry; an axis the parser cannot find is reported, never assumed equal.
 
 Tests (`templates/tests/`) wrap `check` for the test runner and add: exactly one section per heading (a stale copy from an older branch otherwise ships), every `parity` entry with a kit component has `<key>.figma.tsx` when `codeConnect: true`, every legacy `next` reference exists.
 
@@ -36,7 +40,9 @@ Unqualified "parity" reads as total parity. An axis audit only proves the same v
 2. **Visual**: per-variant digest (fills and strokes with variables, radii, text styles, icon slots) vs the code's classes, plus computed styles in the browser.
 3. **Rubric**: nine axes (layout, typography, color, spacing, shadows, borders, radius, icons, states) graded PASS / MINOR / MODERATE / CRITICAL.
 
-Decide now which level `status: parity` requires and write it into the manifest README. Changing it after forty entries forces a re-audit-or-freeze decision that belongs to the design owner. When declaring parity anywhere, say which level was verified.
+Decide now which level `status: parity` requires and write it as `parityLevel` in `ds.config.json` (default `visual`). Changing it after forty entries forces a re-audit-or-freeze decision that belongs to the design owner. `check` refuses a `parity` manifest whose `verified.level` is below it.
+
+Parity is a **verified mirror** (rule 19). The guards cover the manifest's shape (`check`) and the code side (`audit code`), and `check --kit-version <v>` names the entries the kit has moved past. The kit side stays the agent's, read through the bridge in the component phase and again in the cleanup re-audit (`cleanup.md` → §0).
 
 ## 4. Code Connect *(codeConnect)*
 

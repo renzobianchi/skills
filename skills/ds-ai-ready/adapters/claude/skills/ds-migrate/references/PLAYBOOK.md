@@ -235,9 +235,9 @@ Levels:
 2. **Visual parity**: per-variant digest through the plugin bridge (fills and strokes with their variables, radii, text styles, visible icon slots) compared against the code's classes, plus computed styles in the browser.
 3. **The rubric**: nine axes (layout, typography, color, spacing, shadows, borders, radius, icons, states) graded PASS / MINOR / MODERATE / CRITICAL. This is the operational definition `status: "parity"` needs. Decide early whether it is the bar from day one; redefining it after forty entries forces a re-audit-or-freeze decision that belongs to the design owner.
 
-When you declare parity, **say which level you verified**.
+When you declare parity, **say which level you verified**, and make the manifest say it for you: `parity` is a **mirror** with a **stamp** on it, `verified: { level, at, kitVersion }`, written by `ds-manifest.mjs verify <key> <kitVersion>` and required by `check` for every `parity` entry at or above `parityLevel` in `ds.config.json`. Every kit axis value has its code value or an axis `note`; every other deliberate difference is in `asymmetries` with a reason. The stamp exists because a second real run declared its queue done and a QA pass found both kit edits after merge and components never at mirror: `parity` was a word in a file, not a claim against a version. Drift against later kit versions and against the source is swept in Step 6.4a.
 
-**Done when:** the manifest comment states which level `parity` means and the rubric is written down, even if it is applied gradually.
+**Done when:** `parityLevel` is set, the rubric is written down even if applied gradually, and `check` has been seen refusing a `parity` manifest without `verified`.
 
 ### Step 4.4 Code Connect per component, guarded (Figma only, optional)
 
@@ -263,7 +263,7 @@ Sections, in this order: Use when · Use something else when (the boundary with 
 
 Sources, in order of authority: the registry's docs page for a core component (shadcn documents usage and examples per component, and the kit was built from that registry); the parts' usage docs for a composite; the call-site audit from triage for what the product actually does with it; then the design owner, asked one question: what do callers get wrong with this component, and what do they ask for that it should refuse? Their sentences go in verbatim under Owner notes. The owner's perspective is the part no registry has and the reason the file exists in the repo rather than as a link to the docs.
 
-Shipped, not linked: the usage doc is read by agents in consumer repos, so it travels inside the package (Step 6.3a). Scaffolded, never retyped: `scripts/ds-manifest.mjs usage <key>` writes the skeleton from the manifest with `<fill>` markers; `check` fails while a marker survives or the file is missing for a `parity` component. Kept honest the same way as the manifest: a change to an axis changes the usage doc in the same PR, and a caller who finds the doc and the code disagreeing fixes the doc first, because a stale contract is the one agents follow with confidence.
+Shipped inside the package, where agents in consumer repos can read it (Step 6.3a). Scaffolded, never retyped: `scripts/ds-manifest.mjs usage <key>` writes the skeleton from the manifest with `<fill>` markers; `check` fails while a marker survives or the file is missing for a `parity` component. Kept honest the same way as the manifest: a change to an axis changes the usage doc in the same PR, and a caller who finds the doc and the code disagreeing fixes the doc first, because a stale contract is the one agents follow with confidence.
 
 ## 5. Phase 4: the component loop, one-per-PR
 
@@ -416,17 +416,21 @@ Before building a replacement, audit the legacy component's actual importers. Tw
 
 ### Step 6.3 Migration recipes
 
-`MIGRATION.md` is generated from the legacy map by `ds-manifest.mjs docs`, from the first `replaced` entry on. Each legacy manifest carries a `recipe`, the find/replace a caller applies (`FormControl` → `Field` + `FieldLabel`, `Grid` → `grid-cols-12`/`col-span-*`, `Modal` confirmations → `AlertDialog`); absorbed and deprecated entries get one too. `undecided` entries render as "do not migrate yet", which is the line that keeps an agent from migrating them on a guess. The first version of this playbook wrote the guide once `undecided` was empty; the canary in Step 6.1 needs it earlier, and a partial guide that names its own gaps beats no guide.
+`MIGRATION.md` is generated from the legacy map by `ds-manifest.mjs docs`, from the first `replaced` entry on: the canary in Step 6.1 needs the guide before `undecided` is empty, and a partial guide that names its own gaps carries the canary. Each legacy manifest carries a **recipe**, the find/replace a caller applies (`FormControl` → `Field` + `FieldLabel`, `Grid` → `grid-cols-12`/`col-span-*`, `Modal` confirmations → `AlertDialog`); absorbed and deprecated entries get one too. `undecided` entries render as "do not migrate yet", so an agent migrates only the exports that carry a recipe.
 
-### Step 6.3a Ship the docs, or the consumer never sees them
+### Step 6.3a Ship the docs inside the package
 
-The package publishes `dist/`. Everything Step 4.5 and Step 6.3 produced lives in the library repo, and the consumer migration is done by agents working in the consumer's repo (one real case: 612 files importing legacy), where the only thing they can read is `node_modules/<pkg>`. Without a shipping step they find compiled JS.
+Everything Step 4.5 and Step 6.3 produced lives in the library repo, and the consumer migration is done by agents working in the consumer's repo (one real case: 612 files importing legacy), where what they can read is `node_modules/<pkg>` — compiled JS, until you **ship** the docs there too.
 
 `ds-manifest.mjs ship` copies the usage docs, `PARITY.md`, `LEGACY-MAP.md`, `MIGRATION.md` and the merged manifests (`parity.json`, `legacy-map.json`) into `manifests.ship` (`dist/docs`), and writes `llms.txt` at the package root: an index with every doc's path under `node_modules`, the file the consumer's agent instructions point at. It runs on `prepack`; `files` covers both paths; `check` fails when either wiring is missing; `npm pack --dry-run` is the proof. Before the canary, install the released version in the consumer and confirm the files are there.
 
 ### Step 6.4 The fidelity test
 
 The metric for the whole endeavor: the design owner designs a **real screen** with the kit; an agent reproduces it with the new namespace through the Figma MCP; compare screenshots. Run it early, not at the end.
+
+### Step 6.4a Re-audit before deleting
+
+Before any deletion, **re-audit**: sweep every `parity` manifest for **drift** against the kit's current version. `check --kit-version <v>` lists the stamps the kit has moved past and `audit code` lists the manifests whose `axes.code` no longer matches the source; the bridge audit at `parityLevel` decides each; `verify` re-stamps the mirrors and the rest drop to `gap-code`/`gap-kit` with the gap in `note` (deliberate differences go to `asymmetries`, with the owner's reason). `1.0.0` waits for a green sweep, because `1.0.0` is the number consumers read as done. The same sweep runs quarterly in steward.
 
 ### Step 6.5 Cleanup
 
@@ -601,7 +605,7 @@ One rule applies only to contributions: a contributed component needs a **second
 
 For Paper: `"design": { "tool": "paper", "projectPath": "…", "component": "Alert" }`.
 
-Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-needed` · `kit-ready` · `kit-wip`.
+Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-needed` · `kit-ready` · `kit-wip`. Also `asymmetries` (`[{ kit, code, reason }]`) and `verified` (`{ level, at, kitVersion }`, stamped by `verify`, required at `parity`; Step 4.3).
 
 ### legacy/<Export>.json (one file per legacy export)
 
@@ -617,6 +621,7 @@ The caller's contract (Step 4.5). Scaffolded by `scripts/ds-manifest.mjs usage <
 - Committed `PARITY.md` and `LEGACY-MAP.md` equal the generated output; exactly one copy of each section.
 - Every export in the package index has a legacy file or alias.
 - Every `parity` module has a usage doc with no `<fill>` marker left.
+- Every `parity` module has `verified {level, at, kitVersion}` at or above `parityLevel`, and every axis mirrors the kit or carries a note; `--kit-version` flags the stamps older than the kit. `audit code`: `axes.code` equals the source's cva variants.
 - When `manifests.ship` is set: `package.json` `files` covers the ship folder and `llms.txt`, and a script runs `ds-manifest.mjs ship`.
 
 ---
@@ -702,7 +707,8 @@ Changes folded into this revision after the first draft, so a reader of an older
 - **Multi-tool packaging**: tool-agnostic core plus adapters for Claude Code, Codex, Cursor and Grok (§7.1).
 - **`ds.config.json`** as the single place every optional branch is decided (§7.6).
 - **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A). A repo that updates the script with components already at `parity` scaffolds one doc per component before `check` goes green again; fill them in the order of the legacy map's usage counts.
-- **Shipped docs (2026-09-10)**: `MIGRATION.md` is generated from the legacy map from the first `replaced` (legacy manifests gain `recipe`); `ds-manifest.mjs ship` copies docs and merged manifests into the package and writes `llms.txt`; `check` guards the `files` and script wiring (Step 6.3, 6.3a, rule 18). Found on a consumer with 612 legacy-importing files where the package shipped `dist/` alone.
+- **Verified mirror (2026-09-10)**: `parity` needs a `verified` stamp and `asymmetries`; `verify`, `audit code` and `check --kit-version` added; the re-audit sweep runs before deletion and quarterly (Step 4.3, 6.4a, rule 19).
+- **Shipped docs (2026-09-10)**: `MIGRATION.md` generated from the legacy map's `recipe` fields, and `ds-manifest.mjs ship` puts the docs, merged manifests and `llms.txt` inside the package (Step 6.3, 6.3a, rule 18).
 - **First real run (2026-08-24)**: foundations executed from zero in a fresh repo. Legacy-only steps are now marked, `ds-rules` ships self-contained because a plugin skill cannot read outside the working directory, the generator renders `deviation`, and the probe runs against a dev build (`phases/foundations.md`, `traps.md`, Appendix A).
 
 ## Appendix E: sources

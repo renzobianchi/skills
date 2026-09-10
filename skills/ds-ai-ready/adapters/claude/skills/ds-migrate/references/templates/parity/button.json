@@ -15,6 +15,8 @@
     "size": { "code": ["sm", "default", "lg", "icon"], "figma": ["sm", "default", "lg", "icon"] }
   },
   "composeOnly": ["State=Loading (Spinner child + disabled, no loading prop)", "Show Icon (icon child)"],
+  "asymmetries": [],
+  "verified": null,
   "deviation": "",
   "note": "Decisions taken for this component, in order. Read before touching it. Loading is composition, decided <date> with the design owner."
 }
