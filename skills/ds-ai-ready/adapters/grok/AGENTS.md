@@ -8,7 +8,7 @@ Grok Build / Grok Code reads `AGENTS.md` from the repo root. Copy this file ther
 
 - Read `ds.config.json` at the repo root before any design-system work.
 - For any file under the namespace named in `ds.config.json`, apply every rule in `ds-ai-ready/core/rules.md`. When a symptom looks like a component bug, read `ds-ai-ready/core/traps.md` first.
-- Manifests are per component (`<manifests.parity>/<key>.json`); edit only the file of the component you are working on. Regenerate docs with `node scripts/ds-manifest.mjs docs`; never edit `PARITY.md` or `LEGACY-MAP.md` by hand.
+- Manifests are per component (`<manifests.parity>/<key>.json`); edit only the file of the component you are working on. Regenerate docs with `node scripts/ds-manifest.mjs docs`; never edit `PARITY.md`, `LEGACY-MAP.md` or `MIGRATION.md` by hand.
 
 ## Phases (on request)
 

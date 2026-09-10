@@ -4,5 +4,6 @@
   "proposedNext": [],
   "usage": { "app": 207, "marketing": 45 },
   "aliases": ["PrimaryLargeButton", "SecondarySmallIconButton"],
-  "note": "Marketing composes the styled member exports; recipe maps each to variant+size."
+  "recipe": "`<Button.Primary size=\"large\">` → `<Button variant=\"default\" size=\"lg\">`; `<Button.Secondary size=\"small\" icon>` → `<Button variant=\"secondary\" size=\"icon-sm\">`.",
+  "note": "Marketing composes the styled member exports; the recipe maps each to variant+size."
 }

@@ -207,7 +207,7 @@ Three mechanical rules:
 
 - **Edit with targeted string replacement, never a JSON round-trip.** A reformat turns a one-note change into a hundred-line diff.
 - **Manifest changes travel with the component, in the same PR:** the component's manifest file, the affected legacy files, the regenerated docs.
-- **Docs are generated, never edited.** `node scripts/ds-manifest.mjs docs` writes `PARITY.md` and `LEGACY-MAP.md`; `check` fails when the committed copy is stale. A conflict on a generated doc is resolved by regenerating, never by hand.
+- **Docs are generated, never edited.** `node scripts/ds-manifest.mjs docs` writes `PARITY.md`, `LEGACY-MAP.md` and `MIGRATION.md`; `check` fails when the committed copy is stale. A conflict on a generated doc is resolved by regenerating, never by hand.
 
 **Done when:** the manifest exists, every module has a row, and the human `PARITY.md` declares "when they disagree, the JSON wins".
 
@@ -263,7 +263,7 @@ Sections, in this order: Use when · Use something else when (the boundary with 
 
 Sources, in order of authority: the registry's docs page for a core component (shadcn documents usage and examples per component, and the kit was built from that registry); the parts' usage docs for a composite; the call-site audit from triage for what the product actually does with it; then the design owner, asked one question: what do callers get wrong with this component, and what do they ask for that it should refuse? Their sentences go in verbatim under Owner notes. The owner's perspective is the part no registry has and the reason the file exists in the repo rather than as a link to the docs.
 
-Scaffolded, never retyped: `scripts/ds-manifest.mjs usage <key>` writes the skeleton from the manifest with `<fill>` markers; `check` fails while a marker survives or the file is missing for a `parity` component. Kept honest the same way as the manifest: a change to an axis changes the usage doc in the same PR, and a caller who finds the doc and the code disagreeing fixes the doc first, because a stale contract is the one agents follow with confidence.
+Shipped, not linked: the usage doc is read by agents in consumer repos, so it travels inside the package (Step 6.3a). Scaffolded, never retyped: `scripts/ds-manifest.mjs usage <key>` writes the skeleton from the manifest with `<fill>` markers; `check` fails while a marker survives or the file is missing for a `parity` component. Kept honest the same way as the manifest: a change to an axis changes the usage doc in the same PR, and a caller who finds the doc and the code disagreeing fixes the doc first, because a stale contract is the one agents follow with confidence.
 
 ## 5. Phase 4: the component loop, one-per-PR
 
@@ -416,7 +416,13 @@ Before building a replacement, audit the legacy component's actual importers. Tw
 
 ### Step 6.3 Migration recipes
 
-Once `undecided` is empty, derive a consumer-facing `MIGRATION.md` from the legacy map: find/replace recipes per export (`FormControl` → `Field` + `FieldLabel`, `Grid` → `grid-cols-12`/`col-span-*`, `Modal` confirmations → `AlertDialog`). Recipes for absorbed and deprecated entries, too.
+`MIGRATION.md` is generated from the legacy map by `ds-manifest.mjs docs`, from the first `replaced` entry on. Each legacy manifest carries a `recipe`, the find/replace a caller applies (`FormControl` → `Field` + `FieldLabel`, `Grid` → `grid-cols-12`/`col-span-*`, `Modal` confirmations → `AlertDialog`); absorbed and deprecated entries get one too. `undecided` entries render as "do not migrate yet", which is the line that keeps an agent from migrating them on a guess. The first version of this playbook wrote the guide once `undecided` was empty; the canary in Step 6.1 needs it earlier, and a partial guide that names its own gaps beats no guide.
+
+### Step 6.3a Ship the docs, or the consumer never sees them
+
+The package publishes `dist/`. Everything Step 4.5 and Step 6.3 produced lives in the library repo, and the consumer migration is done by agents working in the consumer's repo (one real case: 612 files importing legacy), where the only thing they can read is `node_modules/<pkg>`. Without a shipping step they find compiled JS.
+
+`ds-manifest.mjs ship` copies the usage docs, `PARITY.md`, `LEGACY-MAP.md`, `MIGRATION.md` and the merged manifests (`parity.json`, `legacy-map.json`) into `manifests.ship` (`dist/docs`), and writes `llms.txt` at the package root: an index with every doc's path under `node_modules`, the file the consumer's agent instructions point at. It runs on `prepack`; `files` covers both paths; `check` fails when either wiring is missing; `npm pack --dry-run` is the proof. Before the canary, install the released version in the consumer and confirm the files are there.
 
 ### Step 6.4 The fidelity test
 
@@ -599,7 +605,7 @@ Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-n
 
 ### legacy/<Export>.json (one file per legacy export)
 
-Named by exported name. Fields: `status` (`replaced` | `absorbed` | `deprecated` | `kept` | `undecided`) · `next` (module keys, only when replaced) · `proposedNext` (candidates while undecided or absorbed) · `usage` (importing files per consumer, from triage) · `aliases` · `note`.
+Named by exported name. Fields: `status` (`replaced` | `absorbed` | `deprecated` | `kept` | `undecided`) · `next` (module keys, only when replaced) · `proposedNext` (candidates while undecided or absorbed) · `usage` (importing files per consumer, from triage) · `aliases` · `recipe` (the find/replace a caller applies; rendered into `MIGRATION.md`) · `note` (the builder's reasoning).
 
 ### usage/<key>.md (one file per module at parity)
 
@@ -611,6 +617,7 @@ The caller's contract (Step 4.5). Scaffolded by `scripts/ds-manifest.mjs usage <
 - Committed `PARITY.md` and `LEGACY-MAP.md` equal the generated output; exactly one copy of each section.
 - Every export in the package index has a legacy file or alias.
 - Every `parity` module has a usage doc with no `<fill>` marker left.
+- When `manifests.ship` is set: `package.json` `files` covers the ship folder and `llms.txt`, and a script runs `ds-manifest.mjs ship`.
 
 ---
 
@@ -695,6 +702,7 @@ Changes folded into this revision after the first draft, so a reader of an older
 - **Multi-tool packaging**: tool-agnostic core plus adapters for Claude Code, Codex, Cursor and Grok (§7.1).
 - **`ds.config.json`** as the single place every optional branch is decided (§7.6).
 - **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A). A repo that updates the script with components already at `parity` scaffolds one doc per component before `check` goes green again; fill them in the order of the legacy map's usage counts.
+- **Shipped docs (2026-09-10)**: `MIGRATION.md` is generated from the legacy map from the first `replaced` (legacy manifests gain `recipe`); `ds-manifest.mjs ship` copies docs and merged manifests into the package and writes `llms.txt`; `check` guards the `files` and script wiring (Step 6.3, 6.3a, rule 18). Found on a consumer with 612 legacy-importing files where the package shipped `dist/` alone.
 - **First real run (2026-08-24)**: foundations executed from zero in a fresh repo. Legacy-only steps are now marked, `ds-rules` ships self-contained because a plugin skill cannot read outside the working directory, the generator renders `deviation`, and the probe runs against a dev build (`phases/foundations.md`, `traps.md`, Appendix A).
 
 ## Appendix E: sources

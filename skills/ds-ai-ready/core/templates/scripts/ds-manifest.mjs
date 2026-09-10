@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // ds-manifest: reads per-component manifests, generates the human docs,
 // and validates both. Zero dependencies. Usage:
-//   node scripts/ds-manifest.mjs docs    # write PARITY.md / LEGACY-MAP.md
-//   node scripts/ds-manifest.mjs check   # validate manifests (+ docs equality when commitDocs)
+//   node scripts/ds-manifest.mjs docs    # write PARITY.md / LEGACY-MAP.md / MIGRATION.md
+//   node scripts/ds-manifest.mjs check   # validate manifests (+ docs equality when commitDocs, + shipping config)
 //   node scripts/ds-manifest.mjs usage <key>   # scaffold the component's usage doc from its manifest
+//   node scripts/ds-manifest.mjs ship    # copy docs + merged manifests into manifests.ship, write llms.txt
 // Exports the same functions for the test runner.
 
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
-import { join, basename, resolve, dirname } from 'node:path';
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, rmSync, copyFileSync } from 'node:fs';
+import { join, basename, resolve, dirname, relative } from 'node:path';
 
 export const PARITY_STATUSES = [
   'parity', 'gap-code', 'gap-kit', 'code-only', 'decision-needed', 'kit-ready', 'kit-wip', 'deprecated',
@@ -180,11 +181,48 @@ export const renderLegacyDoc = (config, { legacy }) => {
   ].join('\n');
 };
 
+// The consumer's migration guide, derived from the legacy map from the first
+// `replaced` entry on: a consumer migrating with agents needs the recipes that exist
+// now, and needs `undecided` named as such so nothing gets migrated on a guess.
+// `recipe` is the find/replace a caller applies; `note` is the builder's reasoning and
+// is only the fallback.
+export const renderMigrationDoc = (config, { legacy, parity }) => {
+  const names = Object.keys(legacy).sort((a, b) => a.localeCompare(b));
+  const of = (s) => names.filter((n) => legacy[n].status === s);
+  const usage = (m) => (m.usage ? Object.entries(m.usage).map(([c, v]) => `${c} ${v}`).join(' · ') : '');
+  const line = (n, tail) => `- **${n}**${legacy[n].aliases?.length ? ` (also ${legacy[n].aliases.join(', ')})` : ''}: ${tail}${usage(legacy[n]) ? ` _(${usage(legacy[n])} importing files)_` : ''}`;
+  const replaced = of('replaced').map((n) => {
+    const m = legacy[n];
+    const next = (m.next ?? []).map((k) => `\`${displayName(k)}\``).join(' + ');
+    return line(n, `→ ${next}. ${m.recipe ?? m.note ?? ''}`.trim());
+  });
+  const absorbed = of('absorbed').map((n) => line(n, legacy[n].recipe ?? legacy[n].note ?? 'absorbed at the call site'));
+  const deprecated = of('deprecated').map((n) => line(n, legacy[n].recipe ?? legacy[n].note ?? 'still exported; replacement pending'));
+  const kept = of('kept').map((n) => line(n, 'no change'));
+  const undecided = of('undecided').map((n) => line(n, `**do not migrate yet.** ${legacy[n].proposedNext?.length ? `Proposal: ${legacy[n].proposedNext.map(displayName).join(', ')}. ` : ''}${legacy[n].note ?? ''}`.trim()));
+  const usageDir = config.manifests.ship ? `${config.manifests.ship}/usage/<key>.md` : `${config.manifests.usage}/<key>.md`;
+  const list = (rows) => (rows.length ? rows.join('\n') : '_none_');
+  return [
+    '# Migration guide: legacy → namespace',
+    '',
+    `Generated from \`${config.manifests.legacy}/*.json\` by \`scripts/ds-manifest.mjs docs\`. Do not edit; regenerate. Recipes are find/replace per export; the target component's contract (when, which variant, what to compose) is its usage doc at \`${usageDir}\`. Read the usage doc before applying a recipe.`,
+    '',
+    `**${names.length} legacy exports: ${of('replaced').length} replaced · ${of('absorbed').length} absorbed · ${of('deprecated').length} deprecated · ${of('kept').length} kept · ${of('undecided').length} undecided.** Entries under Undecided have no recipe yet: leave those call sites alone and report them.`,
+    '',
+    `## Replaced\n\n${list(replaced)}\n`,
+    `## Absorbed (dies by recipe, no namespace component)\n\n${list(absorbed)}\n`,
+    `## Deprecated (still exported)\n\n${list(deprecated)}\n`,
+    `## Kept\n\n${list(kept)}\n`,
+    `## Undecided\n\n${list(undecided)}\n`,
+  ].join('\n');
+};
+
 // ---------- commands ----------
 
 export const docsPaths = (config, root = process.cwd()) => ({
   parity: resolve(root, config.manifests.parityDoc),
   legacy: resolve(root, config.manifests.legacyDoc),
+  migration: resolve(root, config.manifests.migrationDoc ?? 'MIGRATION.md'),
 });
 
 export const checkDocs = (config, manifests, root = process.cwd()) => {
@@ -196,8 +234,101 @@ export const checkDocs = (config, manifests, root = process.cwd()) => {
     if (actual !== expected) errors.push(`${label} is stale: run \`node scripts/ds-manifest.mjs docs\``);
   };
   compare(config.manifests.parityDoc, paths.parity, renderParityDoc(config, manifests));
-  if (Object.keys(manifests.legacy).length) compare(config.manifests.legacyDoc, paths.legacy, renderLegacyDoc(config, manifests));
+  if (Object.keys(manifests.legacy).length) {
+    compare(config.manifests.legacyDoc, paths.legacy, renderLegacyDoc(config, manifests));
+    compare(config.manifests.migrationDoc ?? 'MIGRATION.md', paths.migration, renderMigrationDoc(config, manifests));
+  }
   return errors;
+};
+
+// ---------- shipping ----------
+// A doc that never crosses node_modules does not exist for the consumer. The package
+// ships compiled output; the docs above sit in the repo root and the usage folder, so
+// without this step an agent migrating a consumer app has nothing to read.
+
+const readPackageJson = (root) => {
+  const p = join(root, 'package.json');
+  return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null;
+};
+
+// `files` covers a path when an entry equals it or is one of its parents.
+const filesCover = (files, path) => {
+  const clean = (x) => x.replace(/^\.\//, '').replace(/\/+$/, '');
+  const target = clean(path);
+  return (files ?? []).some((f) => { const e = clean(f); return e === target || target.startsWith(`${e}/`); });
+};
+
+export const checkShip = (config, root = process.cwd()) => {
+  const ship = config.manifests.ship;
+  if (!ship) return [];
+  const errors = [];
+  const pkg = readPackageJson(root);
+  if (!pkg) return [`manifests.ship is set but package.json is missing`];
+  const llms = config.manifests.llmsDoc ?? 'llms.txt';
+  if (!Array.isArray(pkg.files)) errors.push(`package.json has no "files"; the shipped docs (${ship}, ${llms}) never reach the consumer`);
+  else {
+    if (!filesCover(pkg.files, ship)) errors.push(`package.json "files" does not cover ${ship}; usage docs and MIGRATION.md stay in the repo`);
+    if (!filesCover(pkg.files, llms)) errors.push(`package.json "files" does not cover ${llms}; the consumer's agent has no index to find the docs`);
+  }
+  const scripts = Object.values(pkg.scripts ?? {}).join('\n');
+  if (!/ds-manifest\.mjs ship|ds:ship/.test(scripts)) errors.push(`no package.json script runs \`ds-manifest.mjs ship\`; wire it into prepack or build so a release cannot skip it`);
+  return errors;
+};
+
+export const renderLlms = (config, manifests, pkgName, usageKeys) => {
+  const base = `node_modules/${pkgName}`;
+  const ship = config.manifests.ship;
+  const parityKeys = [...usageKeys].sort();
+  const legacyCount = Object.keys(manifests.legacy).length;
+  return [
+    `# ${pkgName}`,
+    '',
+    `> Design-system package. Components live under the namespace export; every component at parity has a usage doc (when to use it, which variant, what to compose, the owner's warnings). Read the usage doc before composing; read MIGRATION.md before touching a legacy import. Paths below are relative to the consuming repo.`,
+    '',
+    '## Start here',
+    '',
+    ...(legacyCount ? [`- [Migration guide](${base}/${ship}/MIGRATION.md): find/replace recipe per legacy export; \`undecided\` entries are not to be migrated yet.`] : []),
+    `- [Parity](${base}/${ship}/PARITY.md): which components exist and their status against the design kit.`,
+    `- [parity.json](${base}/${ship}/parity.json): the same, machine-readable, one entry per component key with axes and decisions.`,
+    ...(legacyCount ? [`- [legacy-map.json](${base}/${ship}/legacy-map.json): the migration guide, machine-readable, keyed by legacy export name.`] : []),
+    '',
+    `## Usage docs (${parityKeys.length})`,
+    '',
+    ...parityKeys.map((k) => `- [${displayName(k)}](${base}/${ship}/usage/${k}.md)`),
+    '',
+    '## Not shipped',
+    '',
+    '- Component sources and stories stay in the library repo. The surface is the exports, their props and the token names; anything past that is internal.',
+    '',
+  ].join('\n');
+};
+
+export const ship = (config, manifests, root = process.cwd()) => {
+  const shipDir = config.manifests.ship;
+  if (!shipDir) throw new Error('manifests.ship is not set in ds.config.json');
+  const pkg = readPackageJson(root);
+  if (!pkg?.name) throw new Error('package.json name is required to write llms.txt paths');
+  const out = resolve(root, shipDir);
+  rmSync(out, { recursive: true, force: true });
+  mkdirSync(join(out, 'usage'), { recursive: true });
+  const shipped = [];
+  const copy = (from, to) => { if (existsSync(from)) { copyFileSync(from, to); shipped.push(relative(root, to)); } };
+  const paths = docsPaths(config, root);
+  copy(paths.parity, join(out, 'PARITY.md'));
+  if (Object.keys(manifests.legacy).length) {
+    copy(paths.legacy, join(out, 'LEGACY-MAP.md'));
+    copy(paths.migration, join(out, 'MIGRATION.md'));
+    writeFileSync(join(out, 'legacy-map.json'), JSON.stringify(manifests.legacy, null, 2) + '\n');
+    shipped.push(relative(root, join(out, 'legacy-map.json')));
+  }
+  writeFileSync(join(out, 'parity.json'), JSON.stringify(manifests.parity, null, 2) + '\n');
+  shipped.push(relative(root, join(out, 'parity.json')));
+  const usageKeys = Object.keys(manifests.parity).filter((key) => existsSync(usagePath(config, key, root)));
+  for (const key of usageKeys) copy(usagePath(config, key, root), join(out, 'usage', `${key}.md`));
+  const llms = resolve(root, config.manifests.llmsDoc ?? 'llms.txt');
+  writeFileSync(llms, renderLlms(config, manifests, pkg.name, usageKeys));
+  shipped.push(relative(root, llms));
+  return shipped;
 };
 
 const main = () => {
@@ -208,8 +339,16 @@ const main = () => {
   if (cmd === 'docs') {
     const paths = docsPaths(config, root);
     writeFileSync(paths.parity, renderParityDoc(config, manifests));
-    if (Object.keys(manifests.legacy).length) writeFileSync(paths.legacy, renderLegacyDoc(config, manifests));
+    if (Object.keys(manifests.legacy).length) {
+      writeFileSync(paths.legacy, renderLegacyDoc(config, manifests));
+      writeFileSync(paths.migration, renderMigrationDoc(config, manifests));
+    }
     console.log(`docs written: ${Object.keys(manifests.parity).length} parity, ${Object.keys(manifests.legacy).length} legacy`);
+    return;
+  }
+  if (cmd === 'ship') {
+    const shipped = ship(config, manifests, root);
+    console.log(`shipped ${shipped.length} files:\n${shipped.map((f) => `  ${f}`).join('\n')}`);
     return;
   }
   if (cmd === 'usage') {
@@ -223,12 +362,12 @@ const main = () => {
     return;
   }
   if (cmd === 'check') {
-    const errors = [...validate(config, manifests, root), ...checkDocs(config, manifests, root)];
+    const errors = [...validate(config, manifests, root), ...checkDocs(config, manifests, root), ...checkShip(config, root)];
     if (errors.length) { errors.forEach((e) => console.error(`✗ ${e}`)); process.exit(1); }
     console.log(`ok: ${Object.keys(manifests.parity).length} parity, ${Object.keys(manifests.legacy).length} legacy`);
     return;
   }
-  console.error('usage: ds-manifest.mjs <docs|check|usage <key>>');
+  console.error('usage: ds-manifest.mjs <docs|check|ship|usage <key>>');
   process.exit(2);
 };
 

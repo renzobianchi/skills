@@ -48,9 +48,11 @@ Rules for every component in the new namespace. Each carries the failure it prev
 
 15. **Code-highlighting themes are chosen by measured contrast against your backgrounds**, scoped to the component (`[data-slot=code-block-pre]`, `data-language`), never by taste and never with a global `language-*` class a legacy stylesheet also matches.
 
-16. **Manifest edits go to the component's own file** (`manifests.parity/<key>.json`), by targeted string replacement. Generated docs (`PARITY.md`, `LEGACY-MAP.md`) are regenerated with `node scripts/ds-manifest.mjs docs`; a hand edit is overwritten by the next run and fails `check` until then.
+16. **Manifest edits go to the component's own file** (`manifests.parity/<key>.json`), by targeted string replacement. Generated docs (`PARITY.md`, `LEGACY-MAP.md`, `MIGRATION.md`) are regenerated with `node scripts/ds-manifest.mjs docs`; a hand edit is overwritten by the next run and fails `check` until then.
 
 17. **Read the usage doc before composing with a namespace component; write it before declaring parity.** `manifests.usage/<key>.md` is the caller's contract (when, which variant, what to compose, the owner's warnings); the manifest is the builder's. A screen built from prop names alone picks the variant that compiles, not the one the product means. When the usage doc and the code disagree, fix the doc in the same PR; a stale contract is the one agents follow with confidence.
+
+18. **A doc that does not cross `node_modules` does not exist for the consumer.** Usage docs, `MIGRATION.md` and the manifests ship inside the package (`manifests.ship`, indexed by `llms.txt` at the package root); `package.json` `files` covers both and a script runs `ds-manifest.mjs ship` on `prepack`. The consumer's migration is done by agents working in the consumer's repo, and the only thing they can read is what the package installed. A package that ships `dist/` alone hands them compiled JS and a recipe nobody wrote down. `check` fails on a missing `files` entry or a missing script; `npm pack --dry-run` is the proof.
 
 ## Build procedure (kit-first)
 
@@ -82,7 +84,7 @@ Score each decision. High confidence: decide silently, record in the manifest `n
 - [ ] Stories demonstrate behavior for real (an overflow story overflows; every state has a story)
 - [ ] Dead-selector grep zero; console free of ref warnings across stories
 - [ ] `codeConnect: true` → `<key>.figma.tsx` written and `npx figma connect parse --dir <namespace>` passes
-- [ ] Manifest file updated; usage doc filled, Owner notes answered; generator run; guards green
+- [ ] Manifest file updated; usage doc filled, Owner notes answered; legacy `recipe`s written; generator run; guards green
 - [ ] Every commit passes commitlint locally; subject starts with `commitSubjectPrefix`
 - [ ] Self-review pass on the diff (see `phases/component.md`, step 7)
 - [ ] Design-owner preview in Storybook, handed off with the hand-off list
@@ -136,3 +138,5 @@ Each fails silently and masquerades as a component bug or a design decision. Che
 | `&:is(.dark *)` with the class on a wrapper | wrapper background stays light | `&:where(.dark, .dark *)`, commented so a diff does not revert it |
 | Tailwind auto source detection | a class appears because of where a file sits | `source(none)` plus explicit `@source` per folder |
 | `@base-ui-components/react` | pinned at an rc, deprecation notice | the package is `@base-ui/react` |
+| Package ships `dist/` only | the consumer's agent finds compiled JS and no usage doc, no `MIGRATION.md` | `ds-manifest.mjs ship` on `prepack`; `files` covers the ship folder and `llms.txt`; `npm pack --dry-run` |
+| `MIGRATION.md` written once `undecided` is empty | the canary and the first consumer waves migrate with no recipes, or guess at the undecided ones | generate it from the legacy map from the first `replaced`; undecided renders as "do not migrate yet" |

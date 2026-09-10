@@ -12,7 +12,8 @@ Copy `templates/ds.config.json` to the repo root and fill it. Every later phase 
 - `codeConnect`: whether `<key>.figma.tsx` is required per component and guarded.
 - `tracker`: `linear` or `none`. With `linear`, set `trackerProject`.
 - `primitives`: `base-ui` or `radix`. Pick what shadcn currently defaults to; never mix.
-- `manifests.commitDocs`: whether generated `PARITY.md`/`LEGACY-MAP.md` are committed (guarded for equality) or only rendered.
+- `manifests.commitDocs`: whether generated `PARITY.md`/`LEGACY-MAP.md`/`MIGRATION.md` are committed (guarded for equality) or only rendered.
+- `manifests.ship`: the folder inside the published package where the docs are copied (`dist/docs`), and `manifests.llmsDoc` the index at the package root (`llms.txt`). A doc that never crosses `node_modules` does not exist for the consumer; from zero these stay set so the first release already carries them.
 - `governance` ships empty and stays empty until the migration is over. `phases/steward.md` fills it from a count, and a model guessed at foundations is a claim about teams that have not contributed yet.
 - Unknown values (`design.figmaFileKey`, `design.kitName`, `reviewers`) stay empty, never invented. Nothing validates them, but rule 1 cannot be honoured until the kit fields are filled, so say so in the hand-off (step 6).
 - From zero: keep `legacyPath` as a declaration even if the directory never exists; triage and cleanup read the key, and an absent key is a different claim from an empty one.
@@ -54,9 +55,11 @@ Copy `templates/scripts/ds-manifest.mjs` to `scripts/` and `templates/tests/*.te
 
 If tests are type-checked, add a `ds-manifest.d.mts` beside the script instead of editing either file, so both stay re-copyable from the template.
 
+Ship the docs with the package. The package publishes `dist/` and nothing else, so the usage docs, `PARITY.md`, `MIGRATION.md` and the manifests stay in the library repo unless a step copies them; an agent migrating a consumer app then reads `node_modules/<pkg>` and finds compiled JS. Add `"ds:ship": "node scripts/ds-manifest.mjs ship"` and run it from `prepack` (or the build script, whichever the publish workflow calls), and add `manifests.ship` and `manifests.llmsDoc` to `files` in `package.json`. `ship` copies the docs and the merged manifests (`parity.json`, `legacy-map.json`) into `manifests.ship`, and writes `llms.txt` at the package root: the index a consumer's agent reads first, with every doc's path under `node_modules`. `check` fails when `files` does not cover both or no script runs `ship`, so a release cannot skip it. Verify once with `npm pack --dry-run`: the file list must show `llms.txt` and `<ship>/usage/<seed>.md`.
+
 Break each guard deliberately once (rename a status, delete a doc line, paste a second section, export an unmapped legacy name from `src/index.ts`, put a hex literal in a component, unwrap the seed from `forwardRef`, hand a ref to a plain function in a story) and watch it fail naming the module. A guard never seen failing is not a guard; the first run caught a probe that could never fail this way. The legacy-map guard is vacuous from zero; break it anyway so it is known live for the day a legacy surface appears.
 
-**Done when:** `npm test` runs the guards and each has been seen red once.
+**Done when:** `npm test` runs the guards and each has been seen red once, and `npm pack --dry-run` lists `llms.txt` and the shipped docs folder.
 
 ## 5. Write the project's rules skill
 
