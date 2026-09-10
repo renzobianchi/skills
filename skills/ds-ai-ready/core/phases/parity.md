@@ -42,7 +42,7 @@ Unqualified "parity" reads as total parity. An axis audit only proves the same v
 
 Decide now which level `status: parity` requires and write it as `parityLevel` in `ds.config.json` (default `visual`). Changing it after forty entries forces a re-audit-or-freeze decision that belongs to the design owner. `check` refuses a `parity` manifest whose `verified.level` is below it.
 
-Parity is a **verified mirror**, not a claim. `parity` holds when every kit axis value has its code value or an axis `note` saying why not, every non-axis difference is in `asymmetries`, and `verified` records the level, the date and the kit version the check ran against. The guard enforces the shape (`check`), the code side (`audit code`, cva variants vs `axes.code`) and, given the current kit version (`check --kit-version <v>`), which entries were verified against an older kit. The kit side of the visual check is the agent's, through the bridge, in the component phase and again in the cleanup re-audit. One migration declared forty components done and a QA pass afterwards found both kinds of drift: kit edits after merge and components never at mirror to begin with. Both are what `verified` makes visible.
+Parity is a **verified mirror** (rule 19). The guards cover the manifest's shape (`check`) and the code side (`audit code`), and `check --kit-version <v>` names the entries the kit has moved past. The kit side stays the agent's, read through the bridge in the component phase and again in the cleanup re-audit (`cleanup.md` → §0).
 
 ## 4. Code Connect *(codeConnect)*
 

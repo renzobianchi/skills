@@ -98,12 +98,12 @@ Plus one rule that only applies to contributions:
 
 ## 6. Keep the model honest
 
-Parity too. Every quarter, with the governance recount: read the kit's current version, run `check --kit-version <v>` and `audit code`, and re-verify or demote what they list (cleanup §0, same procedure). A kit edit after `1.0.0` is a `minor` at least (§3) and lands only with the re-verified manifest in the same PR; the design owner does not move a kit component without the code PR that follows it, or the manifest says `gap-code` until it does.
-
 Rerun step 1's count every quarter. The model is wrong the moment the count moves a bracket, and the symptom is always the same in either direction: a centralized system with a federated count has a request backlog nobody is servicing, and a federated system with a centralized count has one exhausted person reviewing everything.
 
 Changing the model is an RFC addendum, not a quiet edit to `ds.config.json`.
 
-**Done when:** the count and its date are in the RFC addendum, and the next review is on someone's calendar.
+Parity too: run the re-audit sweep (`cleanup.md` → §0) against the kit's current version in the same quarter. Between sweeps, a kit edit after `1.0.0` is a `minor` at least (§3) and lands with the re-verified manifest in the same PR; a kit component that moves ahead of its code PR leaves that manifest at `gap-code` until the PR lands.
+
+**Done when:** the count and its date are in the RFC addendum, the quarter's sweep left `check --kit-version <current>` printing `ok`, and the next review is on someone's calendar.
 
 **Phase done when:** `ds.config.json` carries `governance`, `CONTRIBUTING.md` exists with the surface, the bump table and the gates, the deprecation guard has been exercised red and green, and the RFC has the addendum with the model and the count behind it.

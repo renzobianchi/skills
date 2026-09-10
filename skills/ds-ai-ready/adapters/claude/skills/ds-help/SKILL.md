@@ -19,7 +19,7 @@ Evaluate every row top to bottom; the current phase is the **last** row whose si
 | `TRIAGE.md` and `manifests.legacy/*.json` exist (skip when `legacyPath` is empty or absent) | triage done | kit alignment |
 | at least one `manifests.parity/*.json` at `kit-ready` | kit producing | `/ds-ai-ready:ds-migrate component <key>` on the first `kit-ready` by dependency order |
 | every `manifests.parity/*.json` at `parity` or `code-only`, no `kit-ready`/`kit-wip`/`gap-*` | component queue drained | `/ds-ai-ready:ds-migrate cleanup` (starts with §0, the re-audit) |
-| `node scripts/ds-manifest.mjs check --kit-version <current>` and `audit code` both exit 0 | re-audit done: every parity entry is a verified mirror of the current kit | `/ds-ai-ready:ds-migrate cleanup` (§1 onward; `1.0.0` is allowed now) |
+| `node scripts/ds-manifest.mjs check --kit-version <current>` and `audit code` both exit 0 | re-audit done | `/ds-ai-ready:ds-migrate cleanup` (§1 onward; `1.0.0` unblocked) |
 | `legacyPath` gone and every legacy manifest `replaced`/`absorbed`/`deprecated` | cleanup done | `/ds-ai-ready:ds-patterns inventory`, then `/ds-ai-ready:ds-migrate steward` |
 | `governance.model` non-empty in `ds.config.json` | steward done, the system is live | rerun the count in `phases/steward.md` step 1 every quarter |
 
@@ -27,14 +27,16 @@ A component in progress: a branch named `<prefix>-<key>` or a manifest whose `no
 
 ## 1a. Parity health
 
-`parity` means a **verified mirror**, not a status someone typed: the manifest carries `verified { level, at, kitVersion }`, every kit axis value has its code value or an axis `note`, and every other deliberate difference sits in `asymmetries`. Read the kit's current version id from the bridge (Figma: file version; Paper: project commit) and compute:
+Read the kit's current version id from the bridge (Figma: file version; Paper: project commit), then put every `status: parity` manifest in exactly one bucket, by the first test that holds:
 
-- verified against the current kit: `verified.kitVersion` equals it;
-- stale: `verified` present, older kit version (the kit moved after the build; re-audit, cleanup §0);
-- unverified: `status: parity` with no `verified`, or `verified.level` below `parityLevel` in `ds.config.json` (declared on the build day, never proven; also cleanup §0);
-- code drift: entries `node scripts/ds-manifest.mjs audit code` lists (the source's cva variants no longer match `axes.code`).
+- **verified**: `verified.kitVersion` equals the current id and `verified.level` is at or above `parityLevel` in `ds.config.json`;
+- **stale**: `verified` present with a different `kitVersion`;
+- **unverified**: no `verified` field, or `verified.level` below `parityLevel`;
+- **code drift**: the key appears in the output of `node scripts/ds-manifest.mjs audit code`.
 
-If the bridge is down, say so and report the last three from the files alone; never guess the kit version.
+The procedure for the last three buckets is `../ds-migrate/references/phases/cleanup.md` §0.
+
+With the bridge down, read the kit version as unknown, say so in the report, and fill the last three buckets from the files.
 
 ## 2. Find what blocks
 
@@ -42,19 +44,19 @@ Check each; list only the ones that hold:
 
 - `design.figmaFileKey` or `design.kitName` empty with `designTool: figma` (or `paperProjectPath` empty with `paper`): rule 1 forbids building any component. Owner: design.
 - `node scripts/ds-manifest.mjs check` failing: quote its output verbatim; each line names the module and the fix.
-- Any stale, unverified or code-drift entry from §1a: quote the `check --kit-version <current>` and `audit code` output verbatim. Cleanup §0 is the procedure (re-audit at `parityLevel`, then `verify <key> <v>` or demote to `gap-code`/`gap-kit`); no `1.0.0` while the list is non-empty.
+- Any stale, unverified or code-drift entry from §1a: quote the `check --kit-version <current>` and `audit code` output verbatim, name cleanup §0 as the fix, and report `1.0.0` as blocked until the three buckets are empty.
 - A `parity` component without `manifests.usage/<key>.md`: `node scripts/ds-manifest.mjs usage <key>`, then fill it.
 - `kit-ready` manifests whose composed parts are not yet `parity`: name the part.
 - `FINDINGS.md` present: count the entries marked **Open** and name the oldest.
 - A `deprecated` parity manifest without `supersededBy` or `removeIn`: the guard names it; `phases/steward.md` step 4 has the fix.
-- `manifests.ship` set and `npm pack --dry-run` does not list `llms.txt` and `<ship>/usage/*.md`: the docs never reach a consumer's agent. `check` names the missing `files` entry or script; `phases/foundations.md` step 4 has the wiring. From the first `replaced` legacy export, `MIGRATION.md` must also be in that list.
+- `manifests.ship` set and `npm pack --dry-run` missing `llms.txt`, `<ship>/usage/*.md`, or (from the first `replaced` legacy export) `<ship>/MIGRATION.md`: a consumer's agent gets compiled JS only. `check` names the missing `files` entry or script; `phases/foundations.md` step 4 has the wiring.
 
 ## 3. Report
 
 Print, in this order, nothing else:
 
 1. **Phase**: the row from step 1, one line, plus the in-flight component if any.
-2. **Parity**: `<n> verified against kit <v> · <n> stale · <n> unverified · <n> code drift`, with the stale and unverified keys named when there are ten or fewer. One sentence on what the numbers mean the first time they are non-zero: stale is kit movement after the build, unverified is a claim never proven, code drift is the source moving away from its manifest.
+2. **Parity**: `<n> verified against kit <v> · <n> stale · <n> unverified · <n> code drift`, then the stale and unverified keys on one line when they are ten or fewer together. When any of the three is non-zero, print this glossary line unchanged: `stale = the kit moved after the stamp · unverified = parity claimed, never proven · code drift = the source moved away from its manifest`.
 3. **Blocked by**: the list from step 2, or "nothing".
 4. **Next**: the single command or hand-off from the table, with the key filled in.
 5. **Skills**: `ds-migrate <phase>` (runs one phase end to end, `steward` last), `ds-patterns <step>` (after cleanup), `ds-rules` (fires on its own under the namespace; ask it to state rule 1 to confirm it loaded), `ds-help` (this).
