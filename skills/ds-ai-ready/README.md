@@ -55,9 +55,13 @@ Each component owns one file: `parity/<key>.json` (kit and code axes, status, de
 
 Beside the manifest, `usage/<key>.md` tells an agent when to use the component, which variant serves which intent, what to compose, and what the design owner says callers get wrong. `node scripts/ds-manifest.mjs usage <key>` scaffolds it from the manifest; the builder fills it from the registry docs or the parts' docs; the owner adds their notes in their own words. `check` refuses a `parity` component without one. The manifest is for whoever builds the component; the usage doc is for whoever builds with it.
 
+## Parity is a verified mirror
+
+A `parity` manifest carries `verified { level, at, kitVersion }`, written by `node scripts/ds-manifest.mjs verify` after the audit. `check` refuses one without it, or with an axis that differs from the kit and no note; `audit code` compares the axes with the source's cva variants; `check --kit-version` names what the kit has moved past. Cleanup re-audits every entry before deleting legacy, steward repeats it quarterly.
+
 ## The docs ship inside the package
 
-Consumers are migrated by agents working in the consumer's repo, and all they can read is `node_modules/<pkg>`. `node scripts/ds-manifest.mjs ship` copies the usage docs, `PARITY.md`, the generated `MIGRATION.md` and the merged manifests into `dist/docs`, and writes `llms.txt` at the package root as the index. `check` fails when `package.json` `files` does not cover them or no script runs `ship`.
+Consumers are migrated by agents in their own repo, reading `node_modules/<pkg>`. `node scripts/ds-manifest.mjs ship` copies the usage docs, `PARITY.md`, the generated `MIGRATION.md` and the merged manifests into `dist/docs`, and writes `llms.txt` at the package root as the index. `check` fails when `package.json` `files` does not cover them or no script runs `ship`.
 
 ## Config flags
 

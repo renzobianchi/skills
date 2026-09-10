@@ -28,7 +28,7 @@ Check, in order. Any miss stops the phase and reports which.
 
 Follow `rules.md` → Build procedure, kit-first, under its budgets. *(figma)* the bridge is the MCP; *(paper)* the Paper project is open and its design-to-code path is the audit source. In both, measurements are recorded before code is written.
 
-**Done when:** the build procedure's own criterion holds: every recorded measurement matches in both modes in the browser.
+**Done when:** the build procedure's own criterion holds: every recorded measurement matches in both modes in the browser, and the kit version id audited against (`parity.md` → `verified`) is written down for step 5.
 
 ## 4. Stories and tests
 
@@ -40,14 +40,15 @@ Follow `rules.md` → Build procedure, kit-first, under its budgets. *(figma)* t
 
 ## 5. Manifest, docs, mappings
 
-- Edit `manifests.parity/<key>.json` only: status `parity`, axes reconciled, `deviation` and `note` current. Never touch another component's file.
+- Edit `manifests.parity/<key>.json` only: status `parity`, axes reconciled (every kit value has its code value or the axis has a `note` saying why not), `asymmetries` listing every deliberate non-axis difference with its reason, `deviation` and `note` current. Never touch another component's file.
+- Stamp the mirror: `node scripts/ds-manifest.mjs verify <key> <kitVersion>` with the version id from step 3, then `node scripts/ds-manifest.mjs audit code` to prove the manifest's axes match the `cva` variants in the source (rule 19).
 - Legacy map: if this component replaces legacy exports, edit `manifests.legacy/<Export>.json` for each: status `replaced`, `next: ["<key>"]`.
-- Run `node scripts/ds-manifest.mjs docs` to regenerate `PARITY.md`, `LEGACY-MAP.md` and `MIGRATION.md`; commit the result if `commitDocs: true`. When this component replaces legacy exports, write each one's `recipe` in the same edit as its status: the migration guide ships with the next release and a `replaced` entry with no recipe tells the consumer's agent what to remove and not what to write.
+- Run `node scripts/ds-manifest.mjs docs` to regenerate `PARITY.md`, `LEGACY-MAP.md` and `MIGRATION.md`; commit the result if `commitDocs: true`. When this component replaces legacy exports, write each one's `recipe` (`cleanup.md` → §1) in the same edit as its status: `MIGRATION.md` ships with the next release, and a `replaced` entry with no recipe tells the consumer's agent what to remove and not what to write.
 - *(codeConnect)* Write `<key>.figma.tsx` (see `phases/parity.md` → Code Connect rules); `npx figma connect parse --dir <namespace>` passes.
 - Usage doc, the component's contract for callers (the manifest `note` is for builders; an agent composing a screen reads the usage doc, never the manifest): `node scripts/ds-manifest.mjs usage <key>` scaffolds `manifests.usage/<key>.md` from the manifest. Fill every `<fill>`: core component, from the registry's docs page for that component (usage, examples, the "when" the docs give) plus the call-site audit from triage (what the product actually does with it); composite, from the usage docs of its parts plus the kit page description. Boundaries are the valuable lines ("a `Dialog` interrupts; for a side task that keeps the page usable, `Sheet`"), so write at least one per component. Then hand the doc to the design owner with one question: what do callers get wrong with this component, and what do they ask for that it should refuse? Their answer goes under Owner notes in their own sentences, or "none yet".
 - Run the guards: `npm test -- ds-manifest`.
 
-**Done when:** `node scripts/ds-manifest.mjs check` prints `ok` (usage doc present, zero placeholders), Owner notes is filled or says "none yet", and the diff touches no manifest file other than this component's and the legacy exports it replaces.
+**Done when:** `node scripts/ds-manifest.mjs check --kit-version <kitVersion>` prints `ok` (usage doc present, zero placeholders), `audit code` prints `ok`, Owner notes is filled or says "none yet", and the diff touches no manifest file other than this component's and the legacy exports it replaces.
 
 ## 6. Pre-flight
 
@@ -97,4 +98,4 @@ Because every component PR edits only its own manifest files and adds sorted lin
 - Classify findings into tiers (`rules.md` → Closing). Tier 1 into `rules.md` or the manifest note; Tier 2 into the tracker as its own issue; Tier 3 onto the hand-off list.
 - Next component: back to step 1.
 
-**Phase done when:** PR merged, version published, manifest `parity`, docs regenerated, *(codeConnect)* mapping published by the Code Connect workflow, *(tracker)* issue Released, tiers filed.
+**Phase done when:** PR merged, version published, manifest `parity` with `verified` at the kit version the design owner previewed, docs regenerated, *(codeConnect)* mapping published by the Code Connect workflow, *(tracker)* issue Released, tiers filed.
