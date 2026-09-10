@@ -9,6 +9,7 @@
     "kitName": "",
     "paperProjectPath": ""
   },
+  "parityLevel": "visual",
   "codeConnect": true,
   "tracker": "linear",
   "trackerProject": "",

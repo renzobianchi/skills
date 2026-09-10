@@ -235,9 +235,9 @@ Levels:
 2. **Visual parity**: per-variant digest through the plugin bridge (fills and strokes with their variables, radii, text styles, visible icon slots) compared against the code's classes, plus computed styles in the browser.
 3. **The rubric**: nine axes (layout, typography, color, spacing, shadows, borders, radius, icons, states) graded PASS / MINOR / MODERATE / CRITICAL. This is the operational definition `status: "parity"` needs. Decide early whether it is the bar from day one; redefining it after forty entries forces a re-audit-or-freeze decision that belongs to the design owner.
 
-When you declare parity, **say which level you verified**.
+When you declare parity, **say which level you verified**, and make the manifest say it for you: `verified: { level, at, kitVersion }`, written by `ds-manifest.mjs verify <key> <kitVersion>`, required by `check` for every `parity` entry at or above `parityLevel` in `ds.config.json`. Every kit axis value has its code value or an axis `note`; every other deliberate difference is in `asymmetries` with a reason. `audit code` checks the code half against the `cva` variants; `check --kit-version <current>` names the entries the kit has moved past since. The second real run declared its queue done and a QA pass found both kit edits after merge and components never at mirror; neither was visible because `parity` was a word in a file, not a stamp against a version.
 
-**Done when:** the manifest comment states which level `parity` means and the rubric is written down, even if it is applied gradually.
+**Done when:** `parityLevel` is set, the rubric is written down even if applied gradually, and `check` has been seen refusing a `parity` manifest without `verified`.
 
 ### Step 4.4 Code Connect per component, guarded (Figma only, optional)
 
@@ -428,6 +428,10 @@ The package publishes `dist/`. Everything Step 4.5 and Step 6.3 produced lives i
 
 The metric for the whole endeavor: the design owner designs a **real screen** with the kit; an agent reproduces it with the new namespace through the Figma MCP; compare screenshots. Run it early, not at the end.
 
+### Step 6.4a Re-audit before deleting
+
+Before any deletion, sweep every `parity` manifest against the kit's current version: `check --kit-version <v>` and `audit code` list the suspects, the bridge audit at `parityLevel` decides each, `verify` re-stamps the mirrors and the rest drop to `gap-code`/`gap-kit` with the gap in `note` (deliberate differences go to `asymmetries`, with the owner's reason). `1.0.0` waits for a green sweep, because `1.0.0` is the number consumers read as done. The same sweep runs quarterly in steward.
+
 ### Step 6.5 Cleanup
 
 Delete legacy components, the old styling toolchain, the frozen tokens, the retired primitive packages. Consolidate the Tailwind toolchain. Tag `1.0.0`. Write the React upgrade addendum and remove the ref shims together.
@@ -601,7 +605,7 @@ One rule applies only to contributions: a contributed component needs a **second
 
 For Paper: `"design": { "tool": "paper", "projectPath": "…", "component": "Alert" }`.
 
-Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-needed` · `kit-ready` · `kit-wip`.
+Status values: `parity` · `gap-code` · `gap-kit` · `code-only` · `decision-needed` · `kit-ready` · `kit-wip`. Fields added in the second run: `asymmetries` (`[{ kit, code, reason }]`) and `verified` (`{ level, at, kitVersion }`, stamped by `verify`, required at `parity`).
 
 ### legacy/<Export>.json (one file per legacy export)
 
@@ -617,6 +621,7 @@ The caller's contract (Step 4.5). Scaffolded by `scripts/ds-manifest.mjs usage <
 - Committed `PARITY.md` and `LEGACY-MAP.md` equal the generated output; exactly one copy of each section.
 - Every export in the package index has a legacy file or alias.
 - Every `parity` module has a usage doc with no `<fill>` marker left.
+- Every `parity` module has `verified {level, at, kitVersion}` at or above `parityLevel`; every axis mirrors the kit or carries a note; with `--kit-version`, none is verified against an older kit. `audit code`: `axes.code` equals the source's cva variants.
 - When `manifests.ship` is set: `package.json` `files` covers the ship folder and `llms.txt`, and a script runs `ds-manifest.mjs ship`.
 
 ---
@@ -702,6 +707,7 @@ Changes folded into this revision after the first draft, so a reader of an older
 - **Multi-tool packaging**: tool-agnostic core plus adapters for Claude Code, Codex, Cursor and Grok (§7.1).
 - **`ds.config.json`** as the single place every optional branch is decided (§7.6).
 - **Usage docs per component** (`usage/<key>.md`): the caller's contract beside the manifest, scaffolded from it, filled from the registry docs or the parts, closed by the design owner's notes; guarded at `parity` (Step 4.5, Appendix A). A repo that updates the script with components already at `parity` scaffolds one doc per component before `check` goes green again; fill them in the order of the legacy map's usage counts.
+- **Verified mirror (2026-09-10)**: `parity` requires `verified {level, at, kitVersion}` at `parityLevel`; axes must mirror or carry a note; `asymmetries` names the deliberate rest; `verify`, `audit code` and `check --kit-version` added; cleanup §0 re-audits everything before deletion and steward repeats it quarterly (Step 4.3, 6.4a, rule 19). Found when a QA pass after a drained queue turned up both kit edits after merge and components never at mirror.
 - **Shipped docs (2026-09-10)**: `MIGRATION.md` is generated from the legacy map from the first `replaced` (legacy manifests gain `recipe`); `ds-manifest.mjs ship` copies docs and merged manifests into the package and writes `llms.txt`; `check` guards the `files` and script wiring (Step 6.3, 6.3a, rule 18). Found on a consumer with 612 legacy-importing files where the package shipped `dist/` alone.
 - **First real run (2026-08-24)**: foundations executed from zero in a fresh repo. Legacy-only steps are now marked, `ds-rules` ships self-contained because a plugin skill cannot read outside the working directory, the generator renders `deviation`, and the probe runs against a dev build (`phases/foundations.md`, `traps.md`, Appendix A).
 

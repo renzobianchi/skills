@@ -54,6 +54,8 @@ Rules for every component in the new namespace. Each carries the failure it prev
 
 18. **A doc that does not cross `node_modules` does not exist for the consumer.** Usage docs, `MIGRATION.md` and the manifests ship inside the package (`manifests.ship`, indexed by `llms.txt` at the package root); `package.json` `files` covers both and a script runs `ds-manifest.mjs ship` on `prepack`. The consumer's migration is done by agents working in the consumer's repo, and the only thing they can read is what the package installed. A package that ships `dist/` alone hands them compiled JS and a recipe nobody wrote down. `check` fails on a missing `files` entry or a missing script; `npm pack --dry-run` is the proof.
 
+19. **`parity` is a verified mirror, stamped against a kit version.** Every kit axis value has its code value or an axis `note` saying why not; every other deliberate difference is in `asymmetries` with its reason; `verified` carries the level, the date and the kit version id, written by `ds-manifest.mjs verify` after the audit and never by hand. `audit code` proves the code half; `check --kit-version` shows which entries the kit has since moved past. A manifest that says `parity` on the strength of the build day is how forty components ship and a QA pass afterwards finds two kinds of drift at once.
+
 ## Build procedure (kit-first)
 
 1. Read `manifests.parity/<key>.json` (the `note` carries the decisions) and the tracker issue if `tracker != none`.
@@ -84,7 +86,7 @@ Score each decision. High confidence: decide silently, record in the manifest `n
 - [ ] Stories demonstrate behavior for real (an overflow story overflows; every state has a story)
 - [ ] Dead-selector grep zero; console free of ref warnings across stories
 - [ ] `codeConnect: true` → `<key>.figma.tsx` written and `npx figma connect parse --dir <namespace>` passes
-- [ ] Manifest file updated; usage doc filled, Owner notes answered; legacy `recipe`s written; generator run; guards green
+- [ ] Manifest file updated; axes mirrored or noted, `asymmetries` complete; `verify <key> <kitVersion>` stamped; `audit code` ok; usage doc filled, Owner notes answered; legacy `recipe`s written; generator run; guards green
 - [ ] Every commit passes commitlint locally; subject starts with `commitSubjectPrefix`
 - [ ] Self-review pass on the diff (see `phases/component.md`, step 7)
 - [ ] Design-owner preview in Storybook, handed off with the hand-off list
@@ -139,4 +141,7 @@ Each fails silently and masquerades as a component bug or a design decision. Che
 | Tailwind auto source detection | a class appears because of where a file sits | `source(none)` plus explicit `@source` per folder |
 | `@base-ui-components/react` | pinned at an rc, deprecation notice | the package is `@base-ui/react` |
 | Package ships `dist/` only | the consumer's agent finds compiled JS and no usage doc, no `MIGRATION.md` | `ds-manifest.mjs ship` on `prepack`; `files` covers the ship folder and `llms.txt`; `npm pack --dry-run` |
+| `parity` declared on the build day and never revisited | the QA pass at the end finds kit edits after merge and components never at mirror | `verified {level, at, kitVersion}` per manifest; `check --kit-version` before cleanup and quarterly |
+| Axis values copied from the kit once | kit renames or adds a value, manifest and code keep the old set | `axisDrift` in `check`; `audit code` against the cva; re-read the kit at re-audit |
+| A kit≠code difference that lives in someone's head | the auditor flags it as drift, or worse, "fixes" it | `asymmetries` in the manifest with the owner's reason, rendered in `PARITY.md` |
 | `MIGRATION.md` written once `undecided` is empty | the canary and the first consumer waves migrate with no recipes, or guess at the undecided ones | generate it from the legacy map from the first `replaced`; undecided renders as "do not migrate yet" |

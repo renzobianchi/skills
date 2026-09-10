@@ -2,6 +2,17 @@
 
 Runs when `kit-ready` and `kit-wip` are empty and every legacy export is `replaced`, `absorbed`, `deprecated` or `kept`.
 
+## 0. Re-audit every parity manifest before deleting anything
+
+The queue drained over months; the kit did not stand still and some entries were never at mirror. Cleanup deletes the legacy that would have hidden both, so the sweep comes first:
+
+1. Read the kit's current version id from the bridge. `node scripts/ds-manifest.mjs check --kit-version <v>` lists every `parity` entry verified against an older kit; `node scripts/ds-manifest.mjs audit code` lists every manifest whose axes no longer match the source.
+2. For each listed entry, and for every entry whose `verified.at` predates the last kit restructure, rerun the build procedure's audit (rules.md, steps 2 and 4) at `parityLevel`: axes, per-variant digest, computed styles in both modes. Same budgets as a build.
+3. Mirror holds: `verify <key> <v>`. Mirror broken: status → `gap-code` (code owes the kit) or `gap-kit` (kit owes code), the gap in `note`, an issue if `tracker != none`. A difference the design owner declares deliberate goes into `asymmetries` with their reason, not into the note.
+4. Regenerate docs. `PARITY.md` now shows every parity line with its level, date and kit version; the RFC addendum for cleanup quotes the count re-verified and the count demoted.
+
+**Done when:** `check --kit-version <current>` and `audit code` both print `ok` with zero `parity` entries left unverified against the current kit, and the demoted ones are back in the queue.
+
 ## 1. Canary and consumers (start earlier, finish here)
 
 - The canary (one real screen in the heaviest consumer on the new namespace) starts before the queue is half drained. Expect cosmetic snapshot churn from transitive dependency bumps (an icon library changing SVG path serialization is byte-different, semantically identical); refresh snapshots deliberately. A canary allowed to stay red loses its signal: compare exact failure counts against the known baseline.
@@ -23,7 +34,7 @@ In one PR per item, each releasing on its own:
 
 - Single Tailwind toolchain; the npm alias goes away.
 - React upgrade if a version constraint was carried: remove every shim tagged for it in one PR, write the RFC addendum.
-- Tag `1.0.0` with a `BREAKING CHANGE:` footer on the legacy-removal commit.
+- Tag `1.0.0` with a `BREAKING CHANGE:` footer on the legacy-removal commit. Not before §0 is green against the kit version of that day: `1.0.0` is the version consumers read as "done".
 
 ## 4. Hand over to `patterns`
 

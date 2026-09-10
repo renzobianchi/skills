@@ -30,6 +30,7 @@ Check each; list only the ones that hold:
 
 - `design.figmaFileKey` or `design.kitName` empty with `designTool: figma` (or `paperProjectPath` empty with `paper`): rule 1 forbids building any component. Owner: design.
 - `node scripts/ds-manifest.mjs check` failing: quote its output verbatim; each line names the module and the fix.
+- `node scripts/ds-manifest.mjs check --kit-version <current>` (kit version id from the bridge) or `audit code` listing `parity` entries: those are not mirrors any more, or never were. Cleanup §0 is the procedure; no `1.0.0` while the list is non-empty.
 - A `parity` component without `manifests.usage/<key>.md`: `node scripts/ds-manifest.mjs usage <key>`, then fill it.
 - `kit-ready` manifests whose composed parts are not yet `parity`: name the part.
 - `FINDINGS.md` present: count the entries marked **Open** and name the oldest.

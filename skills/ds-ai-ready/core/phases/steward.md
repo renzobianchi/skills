@@ -98,6 +98,8 @@ Plus one rule that only applies to contributions:
 
 ## 6. Keep the model honest
 
+Parity too. Every quarter, with the governance recount: read the kit's current version, run `check --kit-version <v>` and `audit code`, and re-verify or demote what they list (cleanup §0, same procedure). A kit edit after `1.0.0` is a `minor` at least (§3) and lands only with the re-verified manifest in the same PR; the design owner does not move a kit component without the code PR that follows it, or the manifest says `gap-code` until it does.
+
 Rerun step 1's count every quarter. The model is wrong the moment the count moves a bracket, and the symptom is always the same in either direction: a centralized system with a federated count has a request backlog nobody is servicing, and a federated system with a centralized count has one exhausted person reviewing everything.
 
 Changing the model is an RFC addendum, not a quiet edit to `ds.config.json`.
