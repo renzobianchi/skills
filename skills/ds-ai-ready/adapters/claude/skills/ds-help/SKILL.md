@@ -34,6 +34,7 @@ Check each; list only the ones that hold:
 - `kit-ready` manifests whose composed parts are not yet `parity`: name the part.
 - `FINDINGS.md` present: count the entries marked **Open** and name the oldest.
 - A `deprecated` parity manifest without `supersededBy` or `removeIn`: the guard names it; `phases/steward.md` step 4 has the fix.
+- `manifests.ship` set and `npm pack --dry-run` does not list `llms.txt` and `<ship>/usage/*.md`: the docs never reach a consumer's agent. `check` names the missing `files` entry or script; `phases/foundations.md` step 4 has the wiring. From the first `replaced` legacy export, `MIGRATION.md` must also be in that list.
 
 ## 3. Report
 

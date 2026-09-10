@@ -19,7 +19,10 @@
     "usage": "src/next/usage",
     "parityDoc": "PARITY.md",
     "legacyDoc": "LEGACY-MAP.md",
-    "commitDocs": true
+    "migrationDoc": "MIGRATION.md",
+    "commitDocs": true,
+    "ship": "dist/docs",
+    "llmsDoc": "llms.txt"
   },
   "governance": {
     "model": "",

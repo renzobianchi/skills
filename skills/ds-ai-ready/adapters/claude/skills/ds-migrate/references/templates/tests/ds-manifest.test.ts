@@ -6,7 +6,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import {
-  loadConfig, loadManifests, validate, checkDocs, renderParityDoc, docsPaths,
+  loadConfig, loadManifests, validate, checkDocs, checkShip, renderParityDoc, docsPaths,
 } from '../scripts/ds-manifest.mjs';
 
 const root = process.cwd();
@@ -20,6 +20,10 @@ describe('parity manifests', () => {
 
   it('generated docs match the committed ones', () => {
     expect(checkDocs(config, manifests, root)).toEqual([]);
+  });
+
+  it('shipped docs reach the consumer (package.json files covers manifests.ship and llms.txt, a script runs ship)', () => {
+    expect(checkShip(config, root)).toEqual([]);
   });
 
   it('PARITY.md carries exactly one copy of each section', () => {
