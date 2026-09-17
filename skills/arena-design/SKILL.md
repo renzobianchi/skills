@@ -86,6 +86,8 @@ Research is closed when the memo exists and states which pattern source ran and 
 
 Spawn all N in one message as background subagents. Each receives: the problem, the grounding memo, ITS assigned direction (not the others'), its container (section, artboard, route or file) with the medium reference's canvas contract (every node it creates lives inside that container, rationale included), and the obligation to deliver a **visible artifact + rationale**.
 
+In Paper or Figma every note a candidate writes (rationale, annotations, callouts) lives inside a **note card**: a white container with a soft border and rounded corners, defined in the medium reference. A note dropped as loose text on the canvas reads as illegible in the judge screenshot and gets skipped.
+
 The rationale names: which UX decisions it made and why, which alternatives within its direction it discarded, and where its direction suffers (the declared weak point is worth more than the strong one).
 
 A candidate that produces no visible artifact is a **dropout**: continue with N-1 and note it.
@@ -116,7 +118,7 @@ Graft is closed when the synthesis note records base, grafts with source, reject
 
 Final render of the synthesized artifact in the real medium, against the rubric and with the real content at its edge cases (long string, empty list, dark mode when applicable). For code: in the browser, not in the diff. If something fails that a loser solved, go back to Graft.
 
-In Paper or Figma the synthesis lives in its marked container (medium reference: set apart, distinct fill, a `VERDICT` block naming base, grafts and scores), so a reader opening the file a week later tells the verdict from the explorations at a glance. Verify is closed when the render passes and the canvas holds exactly the N direction containers plus the marked synthesis.
+In Paper or Figma the synthesis lives in its marked container (medium reference: set apart, white `#FFFFFF` fill, a `VERDICT` note card naming base, grafts and scores), so a reader opening the file a week later tells the verdict from the explorations at a glance. Then run the medium's **layout sweep**: every frame sits inside its own container, and no two frames, cards, or containers overlap; anything out of place is moved, and the sweep runs again until it finds nothing. Verify is closed when the render passes, the layout sweep finds nothing, and the canvas holds exactly the N direction containers plus the marked synthesis.
 
 ## Outputs
 
