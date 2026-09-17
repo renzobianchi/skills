@@ -8,11 +8,21 @@ One **artboard per candidate**, named `arena/<slug>/<direction>`, laid out in a 
 
 ## Canvas contract
 
-The artboard is the candidate's whole footprint. Every `write_html` targets the candidate's artboard as parent (verify with `get_children` after each write, because of the flattening gotcha below); the rationale is a text block at the top of the artboard, above the screens, so a canvas screenshot carries it. Nothing is written to the canvas root.
+The artboard is the candidate's whole footprint. Every `write_html` targets the candidate's artboard as parent (verify with `get_children` after each write, because of the flattening gotcha below). Nothing is written to the canvas root.
+
+**Note card.** Every note (the rationale, annotations, callouts, the `VERDICT`) is written as a card with its text inside, in one `write_html`: `<div style="background:#FFFFFF;border:1px solid #E5E5E5;border-radius:12px;padding:24px;width:480px"><p>…</p></div>`. Writing the container together with its text also sidesteps the empty-div gotcha below. The card is named after the note (`rationale`, `VERDICT`) with `rename_nodes` and sits at the top of the artboard, above the screens, so a canvas screenshot carries it. Text laid directly on the artboard gets lost against its background.
 
 Orphan sweep, run by the parent right after the fan out and again after Graft: `get_children` on the root, filtered to nodes that are not an artboard named `arena/<slug>/...`. Each orphan is reparented with `move_nodes` into the artboard of the direction it belongs to; one nobody claims goes into a new artboard `arena/<slug>/unsorted`, never deleted. The sweep is closed when the root's children are exactly N direction artboards plus, after Verify, the synthesis artboard.
 
-Synthesis is marked so it never reads as one more direction: artboard `arena/<slug>/synthesis`, placed two artboard-widths to the right of the last direction, with a distinct background and a text block `VERDICT` at its top stating base, grafts with source, and the judge's scores.
+Synthesis is marked so it never reads as one more direction: artboard `arena/<slug>/synthesis`, placed two artboard-widths to the right of the last direction, with a white background (`update_styles` with `background: #FFFFFF`) and a `VERDICT` note card at its top stating base, grafts with source, and the judge's scores. Direction artboards keep the default background, so the white one reads as the verdict at a glance.
+
+**Layout sweep**, run by the parent in Verify after the orphan sweep, from `get_children` on the root and on each artboard (`left`, `top`, `width`, `height`):
+
+1. For every `arena/<slug>/...` artboard, every child lies fully inside the artboard's box; a child that spills out is moved back in with `update_styles`.
+2. Inside each artboard, the children's boxes are compared pairwise; two that intersect are re-laid out in a column with a gap of at least 80, note card first, then screens in the candidate's order.
+3. The artboards themselves are compared pairwise the same way; two that intersect are pushed apart along `left`, keeping the synthesis artboard last on the right.
+
+Fix, then run the sweep again; it is closed when a pass finds no spill and no intersection, and a final canvas screenshot confirms it. Batch the moves into one `update_styles` call per artboard, because of the quota.
 
 ## Writing (known Paper gotchas)
 
@@ -30,4 +40,4 @@ Screenshot of the canvas with the N artboards in a row (or a per-artboard export
 
 ## Verify
 
-The synthesized artifact is built on the marked `arena/<slug>/synthesis` artboard (Canvas contract); candidates remain as the exploration record. Run the orphan sweep once more; Verify is closed only when the root holds exactly the N direction artboards plus synthesis.
+The synthesized artifact is built on the marked `arena/<slug>/synthesis` artboard (Canvas contract); candidates remain as the exploration record. Run the orphan sweep once more, then the layout sweep; Verify is closed only when the root holds exactly the N direction artboards plus synthesis and the layout sweep finds nothing.
