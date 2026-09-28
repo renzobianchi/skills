@@ -76,8 +76,8 @@ One short pass BEFORE the fan out whose output is a shared **grounding memo** wi
 
 **Craft skills.** Detect which craft skills exist in the skills directory (`ls`) and assign them by role:
 
-- **Candidates**: each reads `design-foundations` (hierarchy/spacing/copy floor) plus the one relevant to the problem (`typography`, `color`, `better-layout`, `forms-and-inputs`, `animate` when there is motion). Reference by direct path into the harness's skills directory; reading it is part of the candidate's prompt.
-- **Judge**: audits with the `impeccable` craft-floor lens (or `design-foundations` when impeccable is absent) on top of the arena rubric. Craft is the shared floor; the rubric decides between directions that already clear the floor.
+- **Candidates**: each reads `emil-design-foundations` (hierarchy/spacing/copy floor) plus the one relevant to the problem (`emil-typography`, `emil-color`, `emil-surfaces`, `better-layout`, `emil-forms-and-inputs`, `emil-animations` when there is motion). Reference by direct path into the harness's skills directory; reading it is part of the candidate's prompt. Installs older than the `emil-` prefix carry the same skills without it (`design-foundations`, `typography`, `animate`): use whichever `ls` finds.
+- **Judge**: audits with the `impeccable` craft-floor lens (or `emil-design-foundations` when impeccable is absent) on top of the arena rubric. Craft is the shared floor; the rubric decides between directions that already clear the floor.
 - **Synthesis**: the Graft step honors the user's system rules (tokens, scale, repo conventions) over any candidate preference.
 
 Research is closed when the memo exists and states which pattern source ran and which craft skills were found. Absences degrade the memo, never block the arena.

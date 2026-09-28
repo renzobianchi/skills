@@ -38,7 +38,7 @@ The skill runs self-contained: pattern research falls back to a bundled local ca
 | Integration | What it adds | Install |
 |---|---|---|
 | [Mobbin MCP](https://mobbin.com) | Real production screens/flows for the grounding memo | Mobbin account + MCP setup |
-| [Emil Kowalski's skills](https://aiforui.dev) (`design-foundations`, `typography`, `color`, `forms-and-inputs`, `animate`) | Craft floor each candidate reads before designing | `npx @aiforui/install` |
+| [Emil Kowalski's skills](https://aiforui.dev) (`emil-design-foundations`, `emil-typography`, `emil-color`, `emil-surfaces`, `emil-forms-and-inputs`, `emil-animations`) | Craft floor each candidate reads before designing | `npx @aiforui/install` |
 | [impeccable](https://impeccable.style) | The judge's craft-floor lens | see its site |
 | `better-layout`, `better-accessibility` ([Jakub Krehel](https://github.com/jakubkrehel/skills)) | Layout/a11y depth for relevant problems | `npx skills add jakubkrehel/skills` |
 
